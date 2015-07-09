@@ -1,7 +1,3 @@
-function login() {
-    window.location = 'home.html';
-};
-
 // jQuery for page scrolling feature - requires jQuery Easing plugin
 $(function() {
     // jQuery to collapse the navbar on scroll
