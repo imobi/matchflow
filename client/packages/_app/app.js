@@ -10,20 +10,20 @@ angular.module('matchflow', ['angular-meteor', 'ui.router'])
                 })
                 .state('dashboard', {
                     url: '/dashboard',
-                    templateUrl: '/client/partials/dashboard.ng.html',
+                    templateUrl: 'client/partials/dashboard.ng.html',
                     controller: 'DashboardCtrl',
                     resolve: {
-                        "currentUser": ["$meteor", function ($meteor) {
+                        'currentUser': ['$meteor', function ($meteor) {
                             return $meteor.requireUser();
                         }]
                     }
                 })
                 .state('analyzer', {
                     url: '/analyzer',
-                    templateUrl: '/client/partials/analyzer.ng.html',
+                    templateUrl: 'client/partials/analyzer.ng.html',
                     controller: 'AnalyzerCtrl',
                     resolve: {
-                        "currentUser": ["$meteor", function ($meteor) {
+                        'currentUser': ['$meteor', function ($meteor) {
                             return $meteor.requireUser();
                         }]
                     }

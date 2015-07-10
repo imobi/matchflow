@@ -12,3 +12,5 @@ angularui:angular-ui-router
 twbs:bootstrap
 accounts-ui
 accounts-password
+jquery
+mrt:jquery-easing

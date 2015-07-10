@@ -1,3 +1,86 @@
-<div>
-    <p>{{ message }}</p>
+<div id="dashboardPartial" class="full-size-page" ng-show="$root.currentUser">
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top top-nav-collapse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="glyphicon large-inverted glyphicon-menu-hamburger"></i>
+                </button>
+                <a class="navbar-brand navbar-btn">
+                    <img src="img/mainlogo_small.png" alt="matchflow">
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a id="mfDashboard" class="btn btn-underline navbar-btn">Dashboard</a>
+                    </li>
+                    <li>
+                        <a id="mfAnalyzer" class="btn navbar-btn" href="/analyzer">Analyzer</a>
+                    </li>
+                    <li class="nav-padding">
+                        <input type="button" class="btn btn-danger navbar-btn" value="Sign Out" ng-click="logout()" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--<mf-side-bar side-bar-config="sideBarConfiguration"></mf-side-bar>-->
+
+    <div class="main-content-top">
+        <div id="dashboardContent" class="container content-section">
+            <div class="row main-body">
+                <div class="col-sm-3 col-sm-push-9">
+                    <!-- Notification Area -->
+                    <!--<mf-notes note-data="user.notes"></mf-notes>-->
+                </div>
+                <div class="col-sm-9 col-sm-pull-3">
+                    <!-- Tab Area -->
+                    <!--<mf-tabs tab-data="user.feedList"></mf-tabs>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade left" id="eventManagerDialog" tabindex="-1" role="dialog" aria-labelledby="eventManagerDialogTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="eventManagerDialogTitle">Event Manager</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="dialog-info-text">
+                        Add/Remove Event Groups by using the table below:
+                    </p>
+                    <!--<mf-event-list event-group-data="manageEvents.eventGroupList"></mf-event-list>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade left" id="profileManagerDialog" tabindex="-1" role="dialog" aria-labelledby="profileManagerDialogTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="profileManagerDialogTitle">Profile Manager</h4>
+                </div>
+                <div class="modal-body">
+                    <!--<mf-user-profile profile-data="user"></mf-user-profile>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

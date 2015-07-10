@@ -214,3 +214,7 @@ a:focus {
 .input-group {
     margin-bottom: 10px;
 }
+
+.btn-underline, .btn-underline:hover {
+    border-bottom: solid 5px green;
+}
