@@ -19,7 +19,7 @@ angular.module('matchflow', ['angular-meteor', 'ui.router'])
                     }
                 })
                 .state('analyzer', {
-                    url: '/analyzer',
+                    url: '/analyzer/:pid',
                     templateUrl: 'client/partials/analyzer.ng.html',
                     controller: 'AnalyzerCtrl',
                     resolve: {

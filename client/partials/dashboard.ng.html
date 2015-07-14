@@ -22,7 +22,7 @@
                         <a id="mfDashboard" class="btn btn-underline navbar-btn">Dashboard</a>
                     </li>
                     <li>
-                        <a id="mfAnalyzer" class="btn navbar-btn" href="/analyzer">Analyzer</a>
+                        <a id="mfAnalyzer" class="btn navbar-btn" href="/analyzer/new">Analyzer</a>
                     </li>
                     <li class="nav-padding">
                         <input type="button" class="btn btn-danger navbar-btn" value="Sign Out" ng-click="logout()" />
@@ -32,18 +32,18 @@
         </div>
     </nav>
 
-    <!--<mf-side-bar side-bar-config="sideBarConfiguration"></mf-side-bar>-->
+    <mf-side-bar side-bar-config="sideBarConfiguration"></mf-side-bar>
 
     <div class="main-content-top">
         <div id="dashboardContent" class="container content-section">
             <div class="row main-body">
                 <div class="col-sm-3 col-sm-push-9">
                     <!-- Notification Area -->
-                    <!--<mf-notes note-data="user.notes"></mf-notes>-->
+                    <mf-notes note-data="user.notes"></mf-notes>
                 </div>
                 <div class="col-sm-9 col-sm-pull-3">
                     <!-- Tab Area -->
-                    <!--<mf-tabs tab-data="user.feedList"></mf-tabs>-->
+                    <mf-tabs tab-data="user.feedList"></mf-tabs>
                 </div>
             </div>
         </div>
@@ -59,10 +59,11 @@
                     <p class="dialog-info-text">
                         Add/Remove Event Groups by using the table below:
                     </p>
-                    <!--<mf-event-list event-group-data="manageEvents.eventGroupList"></mf-event-list>-->
+                    <mf-event-list event-group-data="manageEvents.eventGroupList"></mf-event-list>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-click="manageEvents.saveEventGroups()">Save</button>
                 </div>
             </div>
         </div>
@@ -75,7 +76,7 @@
                     <h4 class="modal-title" id="profileManagerDialogTitle">Profile Manager</h4>
                 </div>
                 <div class="modal-body">
-                    <!--<mf-user-profile profile-data="user"></mf-user-profile>-->
+                    <mf-user-profile profile-data="user"></mf-user-profile>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
