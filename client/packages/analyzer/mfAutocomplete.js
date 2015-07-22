@@ -23,7 +23,8 @@ angular.module('matchflow').directive('mfAutocomplete', function($compile) {
 				// TODO add selected result to the selection box and clear the input area
 				element.find('.mf-autocomplete-list').css('display','none');
 				if (scope.selectedGroupsMap[selectedName] === undefined) {
-					var actualGroup = scope.$parent.newProject.eventGroupMap[selectedName];
+                    // BAD, need to fix this reference properly
+					var actualGroup = scope.autocompleteData.groupMap[selectedName];
 					scope.selectedGroupsMap[selectedName] = scope.selectedGroups.length;
 					scope.selectedGroups[scope.selectedGroups.length] = actualGroup;
 				}
@@ -44,8 +45,8 @@ angular.module('matchflow').directive('mfAutocomplete', function($compile) {
 					var searchResults = '<ul class="list-group">';
 					
 					var matchFound = false;
-					for (var i = 0; i < scope.autocompleteData.length; i++) {
-						var result = scope.autocompleteData[i];
+					for (var i = 0; i < scope.autocompleteData.groupList.length; i++) {
+						var result = scope.autocompleteData.groupList[i];
 						if (result.name !== undefined && result.name.indexOf(scope.searchValue)>=0) {
 							matchFound = true;
 							searchResults += '<li class="list-group-item"><a ng-click="resultSelected(\''+result.name+'\')"><div class="mf-fully-clickable">'+result.name+'</div></a></li>';
