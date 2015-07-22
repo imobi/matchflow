@@ -61,7 +61,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
             angular.element('#'+id+'Dialog').modal('show');
         };
         // Event Groups
-        $scope.manageEvents = {
+        $scope.manageEvents = { // TODO MOVE INTO SERVICE
             eventGroupToAdd: {
                 id: '',
                 name: '',
