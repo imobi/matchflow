@@ -1,15 +1,17 @@
 angular.module('matchflow').factory('userService',['$rootScope','$meteor',function($rootScope,$meteor){
-    
     // return the aquired user data object here
-    var userDataObject;
     return {
+        userDataObject: { empty: true },
             // load user object here after login
         bindUserData: function () {
-            userDataObject = $meteor.object(Users,$rootScope.currentUser._id,true);
+            this.userDataObject = $meteor.object(Users,$rootScope.currentUser._id,true);
         },
-        getCurrentUserData : function() { 
+        getCurrentUserData : function() {
+            if (this.userDataObject.empty) {
+                this.bindUserData();
+            }
             // return a reference to the userDataObject
-            return userDataObject;
+            return this.userDataObject;
         }
     };
 }]);

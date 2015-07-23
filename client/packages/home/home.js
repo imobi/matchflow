@@ -3,10 +3,12 @@ angular.module('matchflow').controller('HomeCtrl', ['$scope','$meteor','$state',
         // collapse the navbar on scroll
         
         angular.element(window).scroll(function() {
-            if (angular.element('.home.navbar').offset().top > 50) {
-                angular.element('.home.navbar-fixed-top').addClass('top-nav-collapse');
-            } else {
-                angular.element('.home.navbar-fixed-top').removeClass('top-nav-collapse');
+            if (angular.element('.home').length > 0) {
+                if (angular.element('.home.navbar').offset().top > 50) {
+                    angular.element('.home.navbar-fixed-top').addClass('top-nav-collapse');
+                } else {
+                    angular.element('.home.navbar-fixed-top').removeClass('top-nav-collapse');
+                }
             }
         });
 
