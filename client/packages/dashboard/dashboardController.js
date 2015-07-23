@@ -12,7 +12,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         // GENERAL CONFIG NEEDS TO BE LOADED FROM METEOR AND ACCESSED FROM A SERVICE
         $scope.user = userService.getCurrentUserData();
         // manage events service
-        $scope.manageEvents = managerService.getEventsManager($scope.user.profile.eventGroups);
+        $scope.manageEvents = managerService.getEventsManager();
         // mf-sidebar
         $scope.sideBarConfiguration = {
             onclick: function(id) {
@@ -20,10 +20,14 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
             },
             data: $scope.user.profile.permissions
         };
+        $scope.saveEventGroups = function() {
+            $scope.user.profile.eventGroups = $scope.manageEvents.getEventGroups();
+            angular.element('#eventManagerDialog').modal('hide');
+        };
         $scope.showManagerDialog = function (id) {
             if (id === 'eventManager') {
                 $scope.manageEvents.clearEventInput();
-                $scope.manageEvents.loadEventGroups();
+                $scope.manageEvents.setEventGroups($scope.user.profile.eventGroups);
             } else if (id === 'profileManager') {
 //                $scope.managePlayer = {
 //                    id: 'player_1',

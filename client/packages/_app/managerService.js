@@ -1,8 +1,8 @@
-angular.module('matchflow').factory('managerService',['$meteor','utilsService','userService',function($meteor,utilsService){
+angular.module('matchflow').factory('managerService',['$meteor','utilsService',function($meteor,utilsService){
     // manager service
     // these will all split into their own services in future
     return {
-        getEventsManager : function(eventGroupList) { 
+        getEventsManager : function() { 
             return {
                 eventGroupToAdd: {
                     id: '',
@@ -18,10 +18,9 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
                 },
                 eventGroupList: [],
                 eventGroupMap: {},
-                loadEventGroups : function() {
+                setEventGroups : function(currentEventGroupList) {
                     // load the eventGroups from the list parameter (adds them to the group as well)
-                    // TODO we should really be cloning at this point: cloning will be done when the project is created...
-                    this.eventGroupList = eventGroupList;
+                    this.eventGroupList = currentEventGroupList;
                     // and add them to the map
                     this.eventGroupMap = {};
                     for (var e = 0; e < this.eventGroupList.length; e++) {
@@ -29,9 +28,8 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
                         this.eventGroupMap[eventGroup.id] = eventGroup;
                     }
                 },
-                saveEventGroups : function() {
-                    angular.element('#eventManagerDialog').modal('hide');
-                    return eventGroupList;
+                getEventGroups : function() {
+                    return this.eventGroupList;
                 },
                 addEventGroup: function () {
                     if (this.eventGroupToAdd && this.eventGroupToAdd.name && 
