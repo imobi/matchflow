@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$state','userService','managerService',
-    function ($scope,$meteor,$state,userService,managerService) {
+angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$state','userService','projectsService','managerService',
+    function ($scope,$meteor,$state,userService,projectsService,managerService) {
         $scope.logout = function() {
             $meteor.logout().then(function() {
                 $state.go('home');
@@ -8,6 +8,10 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
                 console.log('Error trying to logout');
             });
         };
+        //LOAD PROJECTS COLLECTION WHEN DASHBOARD CONTROLLER STARTS
+        projectsService.bindProjectsCollection();
+        $scope.projects = projectsService.getProjects();
+        console.log($scope.projects);
         
         // GENERAL CONFIG NEEDS TO BE LOADED FROM METEOR AND ACCESSED FROM A SERVICE
         $scope.user = userService.getCurrentUserData();
