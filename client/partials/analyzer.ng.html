@@ -1,4 +1,4 @@
-<div id="analyzerPartial" class="full-size-page" ng-show="$root.currentUser">
+<div id="analyzerPartial" class="full-size-page container content-section" ng-show="$root.currentUser">
     <!-- Navigation -->
     <nav class="navbar navbar-custom navbar-fixed-top top-nav-collapse" role="navigation">
         <div class="container">
@@ -31,5 +31,85 @@
             </div>
         </div>
     </nav>
+    
+    <!-- LINKUP SIDEBAR <mf-side-bar side-bar-config="sideBarConfiguration"></mf-side-bar>-->
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <table>
+                <tr>
+                    <td class="info-text-title">
+                        Project:
+                    </td>
+                    <td class="info-text">
+                        {{ currentProject.name}}
+                    </td>
+                    <td class="info-text-title">
+                        League:
+                    </td>
+                    <td class="info-text">
+                        {{ currentProject.league}}
+                    </td>
+                    <td class="info-text-title">
+                        Team:
+                    </td>
+                    <td class="info-text">
+                        {{ currentProject.teams}}
+                    </td>
+                    <td class="info-text-title">
+                        Date:
+                    </td>
+                    <td class="info-text">
+                        {{ currentProject.gameDate}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div style="position:fixed; top:100px; right:0px;">
+        <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
+    </div>
+    
+    <mf-video-player video-player-data="videoPlayer"></mf-video-player>
+    
+    <mf-event-tag-lines ng-model="videoPlayer.timer" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.addedTags" play-status="videoPlayer.status"></mf-event-tag-lines>
+    
+    <mf-event-tag-area event-group-data="currentProject.eventGroups"></mf-event-tag-area>
+
+    <div class="modal fade" id="newProjectDetails" tabindex="-1" role="dialog" aria-labelledby="newProjectDetailsTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="newProjectDetailsTitle">Enter New Project Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">Project Name:</span>
+                            <input type="text" ng-model="newProject.name" class="form-control"/>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">League:</span>
+                            <input type="text" ng-model="newProject.selectedLeague" class="form-control"/>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Teams:</span>
+                            <input type="text" ng-model="newProject.selectedTeams" class="form-control"/>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Game Date:</span>
+                            <input type="date" ng-model="newProject.selectedGameDate" class="form-control"/>
+                        </div>
+                        <mf-autocomplete label="'Event Groups:'" search-data="newProject.eventGroupData" ng-model="newProject.selectedEventGroups"></mf-autocomplete>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" ng-click="returnToDashboard('newProjectDetails')">Back</button>
+                    <button type="button" class="btn btn-primary" ng-click="createNewProject()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
 </div>

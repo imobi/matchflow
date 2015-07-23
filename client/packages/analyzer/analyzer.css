@@ -1,0 +1,121 @@
+/* mf-autocomplete */
+.mf-autocomplete-container {
+    position: relative;
+}
+.mf-autocomplete-container > input {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+    height: 36px;
+}
+.mf-autocomplete-container > .input-group-addon {
+    vertical-align: top; 
+    padding-top: 9px;
+}
+.mf-autocomplete-list {
+    position: absolute;
+    top: 36px;
+    z-index: 1;
+    box-shadow: 0px 0px 3px 3px rgba(0,0,0,0.2);
+    background-color: white;
+}
+.mf-autocomplete-list > ul {
+    border: 4px solid white;
+    margin-top: -3px;
+    margin-bottom: 0px;
+    box-shadow: none;
+}
+.mf-autocomplete-selection-list {
+    position: relative;
+    margin-top: 36px;
+    width: 100%;
+}
+.mf-selected-list {
+    margin-bottom: 0px;
+}
+.mf-icon-border {
+    position: absolute;
+    right: 5px;
+    background-color: white;
+    border-radius: 10px;
+    border: solid 5px white;
+    top: 5px;
+}
+.mf-fully-clickable {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* mf-event-tag-line */
+.mf-event-tag-line-container {
+    position:relative; 
+    width:100%;
+    overflow:hidden; 
+    background-color:white; 
+    border: 1px solid #AAA; 
+    border-radius:10px;
+    padding: 10px;
+    margin: 10px 0px;
+}
+.mf-event-tag-line-markers {
+    position:relative; 
+    background-image: url(../img/positionmarker.png); 
+    left:50%; 
+    top:-10px;
+    padding-top: 10px;
+    height: 10px;
+    background-repeat: repeat;
+}
+.mf-event-tag-lines {
+    position:relative; 
+    left:50%; 
+    top:10px;
+}
+.mf-time-indicator {
+    position: absolute;
+    font-weight: normal;
+    color: #777;
+    z-index: 0;
+    font-size: 10px;
+    border-left:1px solid #808080;
+}
+.mf-event-tag-indicator {
+    position: absolute;
+    height: 25px;
+}
+
+/* mf-video-player */
+.mf-video-player-container {
+    border: 1px solid #AAA; 
+    border-radius:10px;
+    height:480px;
+    padding: 10px;
+    margin: 10px 0px;
+}
+.mf-time-bar {
+    position:absolute; 
+    left:50%; 
+    top:0px;
+    width:1px; 
+    height:100%; 
+    border:solid 1px #006dcc; 
+}
+
+/* Analyzer */
+.info-text-title {
+    font-family: arial;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px #777;
+    color: #000;
+}
+
+.info-text {
+    font-family: arial;
+    font-size: 20px;
+    font-weight: bold;
+    color: #006dcc;
+    padding-right: 10px;
+}

@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','managerService','utilsService',
+    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,managerService,utilsService) {
         // standard logout functionality
         $scope.logout = function() {
             $meteor.logout().then(function() {
@@ -19,9 +19,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         } else { // else open the create project popup
             angular.element('#newProjectDetails').modal('show');
         }
-        $scope.replaceAll = function (str, find, replace) {
-            return str.replace(new RegExp(find, 'g'), replace);
-        };
+        $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // PROJECT SPECIFIC
         $scope.currentProject = {
@@ -48,6 +46,11 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             REWIND:'rewinding'
         };
         // INPUT FORMS
+        var userEventGroupMap = {};
+        for (var e = 0; e < $scope.user.eventGroupList.length; e++) {
+            var group = $scope.user.eventGroupList[e];
+            userEventGroupMap[group.id] = group;
+        }
         $scope.newProject = {
             name: '',
             selectedTeams: '',
@@ -56,7 +59,10 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             selectedGameDate: new Date(),
             // INHERITED DATA
             // we pull through important references for the create project dialog
-            eventGroupList : $scope.user.eventGroupList
+            eventGroupData : {
+                groupList : $scope.user.eventGroupList,
+                groupMap : userEventGroupMap
+            }
         };
         // CHART DATA
         $scope.eventGroupChart = {
@@ -98,7 +104,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedEventGroups !== undefined && $scope.newProject.selectedEventGroups.length > 0 &&
                     $scope.newProject.selectedGameDate !== undefined) {
                 $scope.currentProject.name = $scope.newProject.name;
-                $scope.currentProject.id = $scope.replaceAll($scope.newProject.name, ' ', '_');
+                $scope.currentProject.id = utilsService.replaceAll($scope.newProject.name, ' ', '_');
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
@@ -112,7 +118,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     selectedGameDate: '',
                     // INHERITED DATA
                     // we pull through important references for the create project dialog
-                    eventGroupList : $scope.$parent.manageEvents.eventGroupList
+                    eventGroupList : $scope.manageEvents.eventGroupList
                 };
             } else {
                 // TODO form field validation
