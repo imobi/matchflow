@@ -39,11 +39,11 @@
             <div class="row main-body">
                 <div class="col-sm-3 col-sm-push-9">
                     <!-- Notification Area -->
-                    <mf-notes note-data="user.notes"></mf-notes>
+                    <mf-notes note-data="user.profile.notes"></mf-notes>
                 </div>
                 <div class="col-sm-9 col-sm-pull-3">
                     <!-- Tab Area -->
-                    <mf-tabs tab-data="user.feedList"></mf-tabs>
+                    <mf-tabs tab-data="user.profile.feed"></mf-tabs>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
                     <h4 class="modal-title" id="profileManagerDialogTitle">Profile Manager</h4>
                 </div>
                 <div class="modal-body">
-                    <mf-user-profile profile-data="user"></mf-user-profile>
+                    <mf-user-profile profile-data="user.profile"></mf-user-profile>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

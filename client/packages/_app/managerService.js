@@ -20,7 +20,7 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
                 eventGroupMap: {},
                 loadEventGroups : function() {
                     // load the eventGroups from the list parameter (adds them to the group as well)
-                    // TODO we should really be cloning at this point
+                    // TODO we should really be cloning at this point: cloning will be done when the project is created...
                     this.eventGroupList = eventGroupList;
                     // and add them to the map
                     this.eventGroupMap = {};

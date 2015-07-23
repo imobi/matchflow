@@ -12,13 +12,13 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         // GENERAL CONFIG NEEDS TO BE LOADED FROM METEOR AND ACCESSED FROM A SERVICE
         $scope.user = userService.getCurrentUserData();
         // manage events service
-        $scope.manageEvents = managerService.getEventsManager($scope.user.eventGroupList);
+        $scope.manageEvents = managerService.getEventsManager($scope.user.profile.eventGroups);
         // mf-sidebar
         $scope.sideBarConfiguration = {
             onclick: function(id) {
                 $scope.showManagerDialog(id);
             },
-            data: $scope.user.permissions
+            data: $scope.user.profile.permissions
         };
         $scope.showManagerDialog = function (id) {
             if (id === 'eventManager') {

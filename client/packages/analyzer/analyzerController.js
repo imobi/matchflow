@@ -15,23 +15,31 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
         if (projectID !== 'new') { // if there is one, load that project
-            // TODO load project data from meteor collection
+            //Binds current project object from Projects meteor collection
+            $scope.currentProject = $meteor.object(Projects,projectID,true);
         } else { // else open the create project popup
             angular.element('#newProjectDetails').modal('show');
         }
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // PROJECT SPECIFIC
-        $scope.currentProject = {
-            id: '',
+
+        //Schema for project
+        /*$scope.currentProject = {
+            _id: '',
+            users: [],
             name: '',
-            teams: '',
-            league: '',
-            eventGroups: [],
-            addedTags: [],
+            search_meta: [],
+            videoDate: "",
+            videoURL: "",
             creationDate: '',
-            gameDate: ''
+            leagueSelection: '',
+            eventGroupSelection:[],
+            teamSelection:[],
+            event_groups: [],
+            tags: [],
         };
+        */
         // VIDEO PLAYER
         $scope.videoPlayer = {
             timer : {
@@ -47,8 +55,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         };
         // INPUT FORMS
         var userEventGroupMap = {};
-        for (var e = 0; e < $scope.user.eventGroupList.length; e++) {
-            var group = $scope.user.eventGroupList[e];
+        for (var e = 0; e < $scope.user.profile.eventGroups.length; e++) {
+            var group = $scope.user.profile.eventGroups[e];
             userEventGroupMap[group.id] = group;
         }
         $scope.newProject = {
@@ -60,7 +68,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             // INHERITED DATA
             // we pull through important references for the create project dialog
             eventGroupData : {
-                groupList : $scope.user.eventGroupList,
+                groupList : $scope.user.profile.eventGroups,
                 groupMap : userEventGroupMap
             }
         };
