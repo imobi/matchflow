@@ -17,20 +17,22 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
 				'localData',
 				function(newVal,oldVal) {
 					var contentHTML = '';
-					for (var r = 0; r < scope.localData.length; r++) {
-						contentHTML += '<div class="row mf-event-tag-container">';
-						var group = scope.localData[r];
-						contentHTML += '<div class="mf-event-group-title" style="color:'+group.bgColor+';">'+group.name+'</div>';
-						for (var c = 0; c < group.eventList.length; c++) {
-							var event = group.eventList[c];
-							contentHTML += '<div class="col-lg-2"><div ng-click="addThisToTagLine('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">'+event.name+'</div></div>';
-						}
-						contentHTML += '</div>';
-					}
+                    if (scope.localData !== undefined) {
+                        for (var r = 0; r < scope.localData.length; r++) {
+                            contentHTML += '<div class="row mf-event-tag-container">';
+                            var group = scope.localData[r];
+                            contentHTML += '<div class="mf-event-group-title" style="color:'+group.bgColor+';">'+group.name+'</div>';
+                            for (var c = 0; c < group.eventList.length; c++) {
+                                var event = group.eventList[c];
+                                contentHTML += '<div class="col-lg-2"><div ng-click="addThisToTagLine('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">'+event.name+'</div></div>';
+                            }
+                            contentHTML += '</div>';
+                        }
+                    }
 					element.html($compile(contentHTML)(scope));
 				},
 				true
 			);
 		}            
 	};
-})
+});

@@ -11,6 +11,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         };
         // load user data from user service here
         $scope.user = userService.getCurrentUserData();
+        // grab the projects collection, don't auto update
+        $scope.projects = $meteor.collection(Projects,false).subscribe('projects');
         /**************************************/
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
@@ -18,6 +20,21 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             //Binds current project object from Projects meteor collection
             $scope.currentProject = $meteor.object(Projects,projectID,true);
         } else { // else open the create project popup
+            $scope.currentProject = {
+                _id: '',
+                public: true,
+                users: [],
+                name: '',
+                search_meta: [],
+                videoDate: "",
+                videoURL: "",
+                creationDate: '',
+                leagueSelection: '',
+                eventGroupSelection:[],
+                teamSelection:[],
+                event_groups: [],
+                tags: []
+            };
             angular.element('#newProjectDetails').modal('show');
         }
         $scope.manageEvents = managerService.getEventsManager();
@@ -55,8 +72,10 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         };
         // INPUT FORMS
         var userEventGroupMap = {};
+        var userEventGroupsList = [];
         for (var e = 0; e < $scope.user.profile.eventGroups.length; e++) {
             var group = $scope.user.profile.eventGroups[e];
+            userEventGroupsList[userEventGroupsList.length] = group;
             userEventGroupMap[group.id] = group;
         }
         $scope.newProject = {
@@ -68,7 +87,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             // INHERITED DATA
             // we pull through important references for the create project dialog
             eventGroupData : {
-                groupList : $scope.user.profile.eventGroups,
+                groupList : userEventGroupsList,
                 groupMap : userEventGroupMap
             }
         };
@@ -111,23 +130,36 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedLeague !== undefined && $scope.newProject.selectedLeague.length > 0 &&
                     $scope.newProject.selectedEventGroups !== undefined && $scope.newProject.selectedEventGroups.length > 0 &&
                     $scope.newProject.selectedGameDate !== undefined) {
+                // save new project into meteor
+                var projectId = utilsService.replaceAll($scope.newProject.name, ' ', '_');
+                $scope.currentProject._id = projectId;
                 $scope.currentProject.name = $scope.newProject.name;
-                $scope.currentProject.id = utilsService.replaceAll($scope.newProject.name, ' ', '_');
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
                 $scope.currentProject.gameDate = $scope.newProject.selectedGameDate;
-                angular.element('#newProjectDetails').modal('hide');
-                $scope.newProject = {
-                    name: '',
-                    selectedTeams: '',
-                    selectedLeague: '',
-                    selectedEventGroups: [],// we save an array of references
-                    selectedGameDate: '',
-                    // INHERITED DATA
-                    // we pull through important references for the create project dialog
-                    eventGroupList : $scope.manageEvents.eventGroupList
-                };
+                // push one project in
+                $scope.projects.save($scope.currentProject).then(function(numberOfDocs){
+                    console.log('saved project',numberOfDocs);
+                    $scope.currentProject = $meteor.object(Projects,projectID,true);
+                    // now we can hide and clear things
+                    angular.element('#newProjectDetails').modal('hide');
+                    $scope.newProject = {
+                        name: '',
+                        selectedTeams: '',
+                        selectedLeague: '',
+                        selectedEventGroups: [],// we save an array of references
+                        selectedGameDate: '',
+                        // INHERITED DATA
+                        // we pull through important references for the create project dialog
+                        eventGroupData : {
+                            groupList : userEventGroupsList,
+                            groupMap : userEventGroupMap
+                        }
+                    };
+                },function(error){
+                    console.log('error project not saved',error);
+                });
             } else {
                 // TODO form field validation
             }
