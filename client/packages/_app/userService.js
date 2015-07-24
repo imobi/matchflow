@@ -4,7 +4,7 @@ angular.module('matchflow').factory('userService',['$rootScope','$meteor',functi
         _userDataObject: { empty: true },
             // load user object here after login
         bindUserData: function () {
-            this._userDataObject = $meteor.object(Users,$rootScope.currentUser._id,true);
+            this._userDataObject = $meteor.object(Users,$rootScope.currentUser._id,true).subscribe('users');
         },
         getCurrentUserData : function() {
             if (this._userDataObject.empty) {
