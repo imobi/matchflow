@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','managerService','utilsService',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,managerService,utilsService) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService',
+    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService) {
         // standard logout functionality
         $scope.logout = function() {
             $meteor.logout().then(function() {
@@ -12,16 +12,15 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         // load user data from user service here
         $scope.user = userService.getCurrentUserData();
         // grab the projects collection, don't auto update
-        $scope.projects = $meteor.collection(Projects,false).subscribe('projects');
+        $scope.projects = projectsService.getProjectsData();
         /**************************************/
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
         if (projectID !== 'new') { // if there is one, load that project
             //Binds current project object from Projects meteor collection
-            $scope.currentProject = $meteor.object(Projects,projectID,true);
+            $scope.currentProject = projectsService.getProjectByID(projectID);
         } else { // else open the create project popup
             $scope.currentProject = {
-                _id: '',
                 public: true,
                 users: [],
                 name: '',
@@ -40,7 +39,6 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // PROJECT SPECIFIC
-
         //Schema for project
         /*$scope.currentProject = {
             _id: '',
@@ -102,7 +100,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.addTagToTagLine = function (tagObj,groupName) {
             // only add if currently playing
             if ($scope.videoPlayer.status === 'playing') {
-                var l = $scope.currentProject.addedTags.length;
+                var l = $scope.currentProject.tags.length;
                 var time = $scope.videoPlayer.timer.timerPosition;
                 // update chart data (event group)
                 if ($scope.eventGroupChart.hasLabel[groupName] === undefined) {
@@ -113,7 +111,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 } else {
                     $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]]++;
                 }
-                $scope.currentProject.addedTags[l] = {
+                $scope.currentProject.tags[l] = {
                     id: 'group_'+groupName+'_event_' + l + '_' + time,
                     time: time,
                     category: groupName,
@@ -131,17 +129,15 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedEventGroups !== undefined && $scope.newProject.selectedEventGroups.length > 0 &&
                     $scope.newProject.selectedGameDate !== undefined) {
                 // save new project into meteor
-                var projectId = utilsService.replaceAll($scope.newProject.name, ' ', '_');
-                $scope.currentProject._id = projectId;
                 $scope.currentProject.name = $scope.newProject.name;
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
                 $scope.currentProject.gameDate = $scope.newProject.selectedGameDate;
                 // push one project in
-                $scope.projects.save($scope.currentProject).then(function(numberOfDocs){
-                    console.log('saved project',numberOfDocs);
-                    $scope.currentProject = $meteor.object(Projects,projectID,true);
+                $scope.projects.save($scope.currentProject).then(function(projectObjects){
+                    console.log('saved project',projectObjects);
+                    $scope.currentProject = projectsService.getProjectByID(projectObjects[0]._id);
                     // now we can hide and clear things
                     angular.element('#newProjectDetails').modal('hide');
                     $scope.newProject = {

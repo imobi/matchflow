@@ -1,17 +1,20 @@
 angular.module('matchflow').factory('projectsService', ['$meteor',function($meteor){
     return {
     	//Make all projects available and bind to variable
-    	projectsObject: { empty: true },
+    	_projectsObject: { empty: true },
         // bind the projects collection to this object
         bindProjectsCollection: function () {
-        	this.projectsObject = $meteor.collection(Projects);
+        	this._projectsObject = $meteor.collection(Projects);
         },        
-        getProjects : function() {
-        	if (this.projectsObject.empty) {
+        getProjectsData : function() {
+        	if (this._projectsObject.empty) {
                 this.bindProjectsCollection();
             }
             // return a reference to the projectsObject
-          	return this.projectsObject;
+          	return this._projectsObject;
+        },        
+        getProjectByID : function(id) {
+          	return $meteor.object(Projects,id,true);
         }
     };
 }]);

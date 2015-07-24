@@ -9,9 +9,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
             });
         };
         //LOAD PROJECTS COLLECTION WHEN DASHBOARD CONTROLLER STARTS
-        projectsService.bindProjectsCollection();
-        $scope.projects = projectsService.getProjects();
-        console.log($scope.projects);
+        $scope.projects = projectsService.getProjectsData();
         
         // GENERAL CONFIG NEEDS TO BE LOADED FROM METEOR AND ACCESSED FROM A SERVICE
         $scope.user = userService.getCurrentUserData();
