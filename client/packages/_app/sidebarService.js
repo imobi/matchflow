@@ -1,9 +1,10 @@
-angular.module('matchflow').factory('sidebarService',['$meteor',function($meteor){
+angular.module('matchflow').factory('sidebarService',['$meteor','rolesService',function($meteor,rolesService){
     // sidebar service
     return {
         getSidebarConfig : function(user,managers) { 
             return {
-                onclick: function(id) {
+                onclick: function(role) {
+                    var id = rolesService.getRoleDataMappings[role].id;
                     if (id === 'eventManager') {
                         managers['eventManager'].clearInput();
                         managers['eventManager'].loadEventGroups();

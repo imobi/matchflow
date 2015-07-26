@@ -4,7 +4,7 @@ angular.module('matchflow').factory('projectsService', ['$meteor',function($mete
     	_projectsObject: { empty: true },
         // bind the projects collection to this object
         bindProjectsCollection: function () {
-        	this._projectsObject = $meteor.collection(Projects).subscribe('projects');
+        	this._projectsObject = $meteor.collection(Projects,true).subscribe('projects');
         },        
         getProjectsData : function() {
         	if (this._projectsObject.empty) {

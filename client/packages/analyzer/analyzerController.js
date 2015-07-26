@@ -9,10 +9,12 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 console.log('Error trying to logout');
             });
         };
-        // load user data from user service here
+        // Loading the user collection onto the scope
         $scope.user = userService.getCurrentUserData();
-        // grab the projects collection, don't auto update
+        
+        // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
+        
         /**************************************/
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
@@ -78,6 +80,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         }
         $scope.newProject = {
             name: '',
+            users: [$scope.user._id], // we always make sure this user has access
             selectedTeams: '',
             selectedLeague: '',
             selectedEventGroups: [],// we save an array of references
@@ -130,6 +133,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedGameDate !== undefined) {
                 // save new project into meteor
                 $scope.currentProject.name = $scope.newProject.name;
+                $scope.currentProject.users = $scope.newProject.users;
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
@@ -142,6 +146,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     angular.element('#newProjectDetails').modal('hide');
                     $scope.newProject = {
                         name: '',
+                        users: [$scope.user._id], // we always make sure this user has access
                         selectedTeams: '',
                         selectedLeague: '',
                         selectedEventGroups: [],// we save an array of references

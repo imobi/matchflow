@@ -8,11 +8,12 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
                 console.log('Error trying to logout');
             });
         };
-        //LOAD PROJECTS COLLECTION WHEN DASHBOARD CONTROLLER STARTS
+        // Loading the user collection onto the scope
+        $scope.user = userService.getCurrentUserData();
+        
+        // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
         
-        // GENERAL CONFIG NEEDS TO BE LOADED FROM METEOR AND ACCESSED FROM A SERVICE
-        $scope.user = userService.getCurrentUserData();
         // manage events service
         $scope.manageEvents = managerService.getEventsManager();
         // mf-sidebar
@@ -20,17 +21,17 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
             onclick: function(id) {
                 $scope.showManagerDialog(id);
             },
-            data: $scope.user.profile.permissions
+            data: $scope.user.roles
         };
         $scope.saveEventGroups = function() {
             $scope.user.profile.eventGroups = $scope.manageEvents.getEventGroups();
             angular.element('#eventManagerDialog').modal('hide');
         };
         $scope.showManagerDialog = function (id) {
-            if (id === 'eventManager') {
+            if (id === 'eventgroups-manager') {
                 $scope.manageEvents.clearEventInput();
                 $scope.manageEvents.setEventGroups($scope.user.profile.eventGroups);
-            } else if (id === 'profileManager') {
+            } else if (id === 'profile-manager') {
 //                $scope.managePlayer = {
 //                    id: 'player_1',
 //                    firstName: 'Firsty',
@@ -40,7 +41,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
 //                        '...1','...2','...3'
 //                    ]
 //                };
-            } else if (id === 'leagueManager') {
+            } else if (id === 'league-manager') {
 //                $scope.manageLeague = {
 //                    leagues: [
 //                        {
@@ -54,7 +55,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
 //                        }
 //                    ]
 //                };
-            } else if (id === 'teamManager') {
+            } else if (id === 'team-manager') {
 //                $scope.manageCategories.categoryToAdd = {
 //                    teams: [
 //                        {

@@ -1,5 +1,5 @@
 angular.module('matchflow').directive(
-    'mfSideBar', function($compile) {
+    'mfSideBar', ['$compile','rolesService',function($compile,rolesService) {
         return {
             restrict: 'E',
             replace: true,
@@ -10,13 +10,21 @@ angular.module('matchflow').directive(
             link: function(scope,elem,attr) {
                 scope.showManagerDialog = scope.config.onclick;
                 var sideBarHtml = '<ul class="side-bar-container nav nav-pills nav-stacked">';
-                for (var t = 0; t < scope.config.data.length; t++) {
-                    var tab = scope.config.data[t];
-                    sideBarHtml += '<li id="'+tab.id+'" class="side-bar-tab '+tab.id+'" ng-click="showManagerDialog(\''+tab.id+'\');"><div class="rotate90">'+tab.name+'</div></li>';
+                if (scope.config !== undefined && scope.config.data !== undefined) {
+                    for (var t = 0; t < scope.config.data.length; t++) {
+                        var roleName = scope.config.data[t];
+                        var roleData = rolesService.getRoleDataFor(roleName);
+                        var tabId = roleData.id;
+                        if (roleData.sideBar === true) {
+                            sideBarHtml += '<li id="'+tabId+'" class="side-bar-tab '+tabId+'" ng-click="showManagerDialog(\''+tabId+'\');"><div class="rotate90">'+roleData.label+'</div></li>';
+                        }
+                    }
+                } else {
+                    console.log('mfSideBar: No Config Data Found');
                 }
                 sideBarHtml += '</ul>';
                 elem.html($compile(sideBarHtml)(scope));
             }
         };
     }
-);
+]);

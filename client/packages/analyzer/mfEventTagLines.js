@@ -59,10 +59,12 @@ angular.module('matchflow').directive('mfEventTagLines', function($interval) {
 				'tagLinesData',
 				function(newGroupsObject) {
                     scope.groupMap = {};
-                    for (var g = 0; g < scope.tagLinesData.length; g++) {
-                        var groupToAdd = scope.tagLinesData[g];
-                        groupToAdd.index = g;
-                        scope.groupMap[groupToAdd.name] = groupToAdd;
+                    if (scope.tagLinesData !== undefined) {
+                        for (var g = 0; g < scope.tagLinesData.length; g++) {
+                            var groupToAdd = scope.tagLinesData[g];
+                            groupToAdd.index = g;
+                            scope.groupMap[groupToAdd.name] = groupToAdd;
+                        }
                     }
                 },
                 true
