@@ -4,8 +4,10 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.logout = function() {
             $meteor.logout().then(function() {
                 $state.go('home');
+                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
             },function(err) {
                 $state.go('home');
+                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
                 console.log('Error trying to logout');
             });
         };
@@ -169,6 +171,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             angular.element('#'+dialogId).modal('hide');
             $timeout(function() {
                 $state.go('dashboard');
+                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
             },300);
         };
     }]

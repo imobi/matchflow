@@ -13,13 +13,13 @@ angular.module('matchflow').directive('mfEventGroup', function($compile) {
                         '<div class="panel panel-default">'+
                             '<div class="panel-heading" role="tab" id="'+attrs.eventGroupId+'_heading">'+
                                 '<h4 class="panel-title" style="position:relative;">'+
-                                    '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">'+
+                                    '<a role="button" data-toggle="collapse" href="#collapse_'+attrs.eventGroupId+'" aria-expanded="true" aria-controls="collapse_'+attrs.eventGroupId+'">'+
                                         attrs.eventGroupName+' (@'+attrs.eventGroupId+')'+
                                     '</a>'+
                                     '<a style="position:absolute; right:0px;" ng-click="manageEvents.removeEventGroup('+attrs.eventGroupIndex+')"><i class="glyphicon glyphicon-trash"></i></a>'+
                                 '</h4>'+
                             '</div>'+
-                            '<div id="'+attrs.eventGroupId+'_collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="'+attrs.eventGroupId+'_heading">'+
+                            '<div id="collapse_'+attrs.eventGroupId+'" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="'+attrs.eventGroupId+'_heading">'+
                                 '<div class="form-inline" style="margin-left:10px; margin-top:5px;">'+
                                     '<div class="form-group">'+
                                         '<input type="text" placeholder="name" ng-model="manageEvents.eventGroupMap[\''+attrs.eventGroupId+'\'].eventToAdd.name" class="form-control" style="width:180px;" /> '+

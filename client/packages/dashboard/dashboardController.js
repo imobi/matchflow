@@ -3,8 +3,10 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         $scope.logout = function() {
             $meteor.logout().then(function() {
                 $state.go('home');
+                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
             },function(err) {
                 $state.go('home');
+                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
                 console.log('Error trying to logout');
             });
         };
