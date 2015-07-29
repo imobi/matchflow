@@ -1,13 +1,11 @@
 angular.module('matchflow').directive(
-    'mfNotes', function() {
+    'mfNotes', ['notesService',function(notesService) {
         return {
             restrict: 'E',
             replace: true,
-            scope: {
-                notes: '=noteData'
-            },
             template: '<div></div>',
             link: function(scope,elem,attr) {
+                scope.notes = [];
                 var listHtml = '<ul class="mf-notes">';
                 for (var l = 0; l < scope.notes.length; l++) {
                     var note = scope.notes[l];
@@ -18,4 +16,4 @@ angular.module('matchflow').directive(
             }
         };
     }
-);
+]);

@@ -8,6 +8,7 @@ angular.module('matchflow').directive('mfUserProfile', ['$compile','rolesService
             restrict: 'E',
             template: '<div></div>',
             link: function(scope, element) {
+                // TODO refactor this to be a template not javascript builder
                 var content = '';
                 content += '<div class="dialog-info-text">Basic Info:</div>';
                 var basicInfo = [];
@@ -23,7 +24,7 @@ angular.module('matchflow').directive('mfUserProfile', ['$compile','rolesService
                             '<input type="text" class="form-control" placeholder="'+info.label+'" value="'+scope.localProfileData[info.id]+'" aria-describedby="'+info.id+'Label">'+
                         '</div>';
                 }
-                content += '<div class="dialog-info-text">Permissions:</div>';
+                content += '<div class="dialog-info-text">Active Permissions:</div>';
                 content += '<ul class="list-group">';
                 if (scope.localRolesData !== undefined) {
                     for (var i = 0; i < scope.localRolesData.length; i++) {

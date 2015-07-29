@@ -1,0 +1,53 @@
+/* mf-notes */
+ul.mf-notes {
+    list-style: none;
+    padding-left: 0px;
+}
+ul.mf-notes > li {
+    padding: 10px 15px;
+    background-color: grey;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #FFF;
+    text-shadow: #333 0px 1px 3px;
+}
+ul.mf-notes > li.critical {
+    background-color: #AA0000;
+    
+    -webkit-animation-name: notePulse;
+    -moz-animation-name: notePulse;
+    -webkit-animation-duration: 1.5s;
+    -moz-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+}
+ul.mf-notes > li.critical:hover {
+    -webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: 1s;
+    -moz-transition-property: -moz-transform;
+    -moz-transition-duration: 1s;
+    -webkit-animation-iteration-count: 1;
+    -moz-animation-iteration-count: 1;
+}
+@-webkit-keyframes notePulse {    
+    0% { -webkit-transform: scale(1); transform: scale(1); }
+    50% { -webkit-transform: scale(1.01); transform: scale(1.02); }
+    100% { -webkit-transform: scale(1); transform: scale(1); }
+}
+@-moz-keyframes notePulse {    
+    0% { -moz-transform: scale(1); transform: scale(1); }
+    50% { -moz-transform: scale(1.01); transform: scale(1.02); }
+    100% { -moz-transform: scale(1); transform: scale(1); }
+}
+ul.mf-notes > li.success {
+    background-color: #00AA00;
+}
+ul.mf-notes > li.warning {
+    background-color: #FFAA00;
+}
+ul.mf-notes > li.info {
+    background-color: #006dcc;
+}

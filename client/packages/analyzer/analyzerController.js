@@ -42,23 +42,6 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         }
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
-        // PROJECT SPECIFIC
-        //Schema for project
-        /*$scope.currentProject = {
-            _id: '',
-            users: [],
-            name: '',
-            search_meta: [],
-            videoDate: "",
-            videoURL: "",
-            creationDate: '',
-            leagueSelection: '',
-            eventGroupSelection:[],
-            teamSelection:[],
-            event_groups: [],
-            tags: [],
-        };
-        */
         // VIDEO PLAYER
         $scope.videoPlayer = {
             timer : {

@@ -1,7 +1,6 @@
 angular.module('matchflow').controller('HomeCtrl', ['$scope','$meteor','$state','$timeout','userService',
     function ($scope,$meteor,$state,$timeout,userService) {
         // collapse the navbar on scroll
-        
         angular.element(window).scroll(function() {
             if (angular.element('.home').length > 0) {
                 if (angular.element('.home.navbar').offset().top > 50) {
@@ -19,9 +18,14 @@ angular.module('matchflow').controller('HomeCtrl', ['$scope','$meteor','$state',
             }, 1500, 'easeInOutExpo');
             event.preventDefault();
         });
+        
         // Closes the Responsive Menu on Menu Item Click
         angular.element('.navbar-collapse ul li a').click(function() {
             angular.element('.navbar-toggle:visible').click();
+        });
+        
+        angular.element('#signInModal').on('shown.bs.modal', function () {
+            angular.element('#userLogin').focus();
         });
         
         $scope.login = function() {

@@ -11,18 +11,18 @@ angular.module('matchflow').directive(
                 // TODO infinite scroller
                 // TODO URL feed loader
                 var feedData = [
-                    {
-                        id: 'post1',
-                        title: 'Example Post 1',
-                        description: 'This is an example post demonstrating feed data.',
-                        link: '#'
-                    },
-                    {
-                        id: 'post2',
-                        title: 'Example Post 2',
-                        description: 'This is an example post demonstrating feed data.',
-                        link: '#'
-                    }
+//                    {
+//                        id: 'post1',
+//                        title: 'Example Post 1',
+//                        description: 'This is an example post demonstrating feed data.',
+//                        link: '#'
+//                    },
+//                    {
+//                        id: 'post2',
+//                        title: 'Example Post 2',
+//                        description: 'This is an example post demonstrating feed data.',
+//                        link: '#'
+//                    }
                 ];
                 var feedHtml = '';
                 for (var f = 0; f < feedData.length; f++) {

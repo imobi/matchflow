@@ -24,7 +24,6 @@
                     <li class="nav-padding">
                         <input type="button" class="btn btn-primary btn-lg navbar-btn" data-toggle="modal" data-target="#signInModal" value="Sign In"  ng-hide="$root.currentUser"/>
                         <input type="button" class="btn btn-danger btn-lg navbar-btn" ng-click="logout()" value="Sign Out"  ng-show="$root.currentUser"/>
-                        <!--<input type="button" class="btn btn-success btn-lg navbar-btn" ng-click="createUser('kimeshan@gmail.com','password','Kimi','Naidoo')" value="Create"/>-->
                     </li>
                 </ul>
             </div>
@@ -89,8 +88,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group" ng-hide="$root.loggingIn || $root.currentUser">
-                        <input type="text" id="userLogin" placeholder="email" class="form-control"/><br/>
-                        <input type="password" id="userPassword" placeholder="password" class="form-control"/>
+                        <input type="text" id="userLogin" placeholder="email" class="form-control" tabindex="1"/><br/>
+                        <input type="password" id="userPassword" placeholder="password" class="form-control" tabindex="2"/>
                     </div>
                     <div class="form-group" ng-show="$root.loggingIn">
                         <h2>Signing In, please wait...</h2>
@@ -101,8 +100,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" ng-click="login()">Sign In</button>
+                    <button class="btn btn-danger" data-dismiss="modal" tabindex="4">Cancel</button>
+                    <button class="btn btn-primary" ng-click="login()" tabindex="3">Sign In</button>
                 </div>
             </div>
         </div>
