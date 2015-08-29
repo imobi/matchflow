@@ -1,5 +1,6 @@
 angular.module('matchflow').factory('projectsService', ['$meteor',function($meteor){
     return {
+        _currentProject: undefined,
     	//Make all projects available and bind to variable
     	_projectsObject: { empty: true },
         // bind the projects collection to this object

@@ -36,40 +36,40 @@
     
     <div class="row">
         <div class="col-lg-12">
-            <table>
-                <tr>
-                    <td class="info-text-title">
-                        Project:
-                    </td>
-                    <td class="info-text">
-                        {{ currentProject.name}}
-                    </td>
-                    <td class="info-text-title">
-                        League:
-                    </td>
-                    <td class="info-text">
-                        {{ currentProject.league}}
-                    </td>
-                    <td class="info-text-title">
-                        Team:
-                    </td>
-                    <td class="info-text">
-                        {{ currentProject.teams}}
-                    </td>
-                    <td class="info-text-title">
-                        Date:
-                    </td>
-                    <td class="info-text">
-                        {{ currentProject.gameDate}}
-                    </td>
-                </tr>
-            </table>
+            <span class="info-text-title">
+                Project:
+            </span>
+            <span class="info-text">
+                {{ currentProject.name}}
+            </span>
+            <span class="info-text-title">
+                League:
+            </span>
+            <span class="info-text">
+                {{ currentProject.league}}
+            </span>
+            <span class="info-text-title">
+                Team:
+            </span>
+            <span class="info-text">
+                {{ currentProject.teams}}
+            </span>
+            <span class="info-text-title">
+                Date:
+            </span>
+            <span class="info-text">
+                {{ currentProject.gameDate}}
+            </span>
+            <span>
+                <a ng-click="closeCurrentProject()"><button class="btn btn-danger">Close</button></a>
+            </span>
         </div>
     </div>
     
+    <!-- CHARTING EXAMPLE
     <div style="position:fixed; top:100px; right:0px;">
         <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
-    </div>
+    </div-->
     
     <mf-video-player video-player-data="videoPlayer"></mf-video-player>
     
@@ -105,8 +105,42 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" ng-click="returnToDashboard('newProjectDetails')">Back</button>
+                    <button type="button" class="btn btn-danger" ng-click="goBack('newProjectDetails')">Back</button>
                     <button type="button" class="btn btn-primary" ng-click="createNewProject()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="existingProject" tabindex="-1" role="dialog" aria-labelledby="existingProjectTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="existingProjectTitle">Choose Existing Project</h4>
+                </div>
+                <div class="modal-body">
+                    <mf-project-selector dialog="'existingProject'"></mf-project-selector>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" ng-click="goBack('existingProject')">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="whatDoYouWantToDo" tabindex="-1" role="dialog" aria-labelledby="whatDoYouWantToDoTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="existingProjectTitle">What do you want to do?</h4>
+                </div>
+                <div class="modal-body">
+                    <a ng-click="showCreateNew();"><button class="btn btn-success btn-full">Create New Project</button></a>
+                    <a ng-click="showChooseExisting();"><button class="btn btn-success btn-full">Find Existing Project</button></a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" ng-click="goBack('whatDoYouWantToDo',true)">Back To Dashboard</button>
+                    <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

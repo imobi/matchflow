@@ -3,3 +3,11 @@
     list-style: none;
     padding-left: 0px;
 }
+
+.btn-full {
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold !important;
+    border-radius: 3px !important;
+}

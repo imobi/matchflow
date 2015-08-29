@@ -16,14 +16,35 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         
         // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
+
+        // close the currently open project
+        $scope.closeCurrentProject = function() {
+            // show choose dialog again
+            $scope.goBack();
+        };
+        
+        // used to decide when to show the cancel button in the WDYWTD dialog
+        // requires the current project variable to be accurate
+        $scope.showWDYWTDCancelButton = function() {
+            return projectsService._currentProject !== undefined && projectsService._currentProject !== 'choose' && projectsService._currentProject !== 'new';
+        };
         
         /**************************************/
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
-        if (projectID !== 'new') { // if there is one, load that project
+        if (projectID === 'new') { // else open the create project popup
+            $scope.showCreateNew();
+        } else if (projectID !== 'new' && projectID !== 'choose') { // if there is one, load that project
             //Binds current project object from Projects meteor collection
             $scope.currentProject = projectsService.getProjectByID(projectID);
-        } else { // else open the create project popup
+            console.log('setting current project here: '+projectID);
+            projectsService._currentProject = projectID;
+        } else {
+            // choose
+            angular.element('#whatDoYouWantToDo').modal('show');
+        }
+        $scope.showCreateNew = function() {
+            angular.element('#whatDoYouWantToDo').modal('hide');
             $scope.currentProject = {
                 public: true,
                 users: [],
@@ -39,7 +60,11 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 tags: []
             };
             angular.element('#newProjectDetails').modal('show');
-        }
+        };
+        $scope.showChooseExisting = function() {
+            angular.element('#whatDoYouWantToDo').modal('hide');
+            angular.element('#existingProject').modal('show');
+        };
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // VIDEO PLAYER
@@ -150,12 +175,18 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 // TODO form field validation
             }
         };
-        $scope.returnToDashboard = function(dialogId) {
+        $scope.goBack = function(dialogId,allTheWay) {
             angular.element('#'+dialogId).modal('hide');
-            $timeout(function() {
-                $state.go('dashboard');
-                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
-            },300);
+            if (allTheWay) {
+                // reset the identifier
+                projectsService._currentProject = undefined;
+                $timeout(function() {
+                    $state.go('dashboard');
+                    angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
+                },300);
+            } else {
+                angular.element('#whatDoYouWantToDo').modal('show');
+            }
         };
     }]
 );

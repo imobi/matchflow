@@ -7,6 +7,9 @@ angular.module('matchflow').directive('mfProjectManager', ['$compile','$location
             restrict: 'E',
             template: '<div class="mf-project-manager">'+
                     '<ul id="projectManagerList">'+
+                        '<li>'+
+                            '<a ng-click="openProject(\'new\');"><button class="btn btn-success btn-full">Create New Project</button></a>'+
+                        '</li>'+
                         '<li ng-repeat="project in projectsLocal">'+
                             '<div class="panel-group" role="tablist" aria-multiselectable="false">'+
                                 '<div class="panel panel-default">'+

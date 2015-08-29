@@ -15,6 +15,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         
         // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
+        $scope.currentAnalyzerProjectId = projectsService._currentProject === undefined ? 'choose': projectsService._currentProject;
         
         // manage events service
         $scope.manageEvents = managerService.getEventsManager();
