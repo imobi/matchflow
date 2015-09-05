@@ -57,7 +57,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 eventGroupSelection:[],
                 teamSelection:[],
                 event_groups: [],
-                tags: []
+                tags: [],
+                password: ""
             };
             angular.element('#newProjectDetails').modal('show');
         };
@@ -148,10 +149,14 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
                 $scope.currentProject.gameDate = $scope.newProject.selectedGameDate;
+                             
                 // push one project in
                 $scope.projects.save($scope.currentProject).then(function(projectObjects){
                     console.log('saved project',projectObjects);
                     $scope.currentProject = projectsService.getProjectByID(projectObjects[0]._id);
+                    //Generate a password for project and add to video server's white list
+                    Meteor.call('addProjectToVideoServer',$scope.currentProject._id);
+
                     // now we can hide and clear things
                     angular.element('#newProjectDetails').modal('hide');
                     $scope.newProject = {

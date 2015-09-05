@@ -55,4 +55,7 @@ Meteor.startup(function () {
             }
         });
     }
+
+    //Define the video server address here
+    videoServer = "http://10.0.0.13:3001";
 });
