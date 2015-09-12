@@ -43,7 +43,7 @@ angular.module('matchflow').directive('mfProjectManager', ['$compile','$location
                     },300);
                 };
                 scope.removeProject = function(id) {
-                    // TODO remove the project from the collection, first confirm? double tap to delete?
+                    //TODO: Add confirmation: Are you sure you want to delete?
                 };
             }
         };

@@ -56,6 +56,6 @@ Meteor.startup(function () {
         });
     }
 
-    //Define the video server address here
-    videoServer = "http://10.0.0.13:3001";
+    //Define the video server address here, uncomment once droplet created on DigitalOcean and IP address of video server is known
+    //videoServer = "http://xxx.xxx.xxx:3001";
 });

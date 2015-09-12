@@ -30,19 +30,6 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         };
         
         /**************************************/
-        // we expecting a project ID in the URL
-        var projectID = $stateParams['pid'];
-        if (projectID === 'new') { // else open the create project popup
-            $scope.showCreateNew();
-        } else if (projectID !== 'new' && projectID !== 'choose') { // if there is one, load that project
-            //Binds current project object from Projects meteor collection
-            $scope.currentProject = projectsService.getProjectByID(projectID);
-            console.log('setting current project here: '+projectID);
-            projectsService._currentProject = projectID;
-        } else {
-            // choose
-            angular.element('#whatDoYouWantToDo').modal('show');
-        }
         $scope.showCreateNew = function() {
             angular.element('#whatDoYouWantToDo').modal('hide');
             $scope.currentProject = {
@@ -58,10 +45,26 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 teamSelection:[],
                 event_groups: [],
                 tags: [],
-                password: ""
+                password: "",
+                videoServerToken: null
             };
             angular.element('#newProjectDetails').modal('show');
         };
+
+        // we expecting a project ID in the URL
+        var projectID = $stateParams['pid'];
+        if (projectID === 'new') { // else open the create project popup
+            $scope.showCreateNew();
+        } else if (projectID !== 'new' && projectID !== 'choose') { // if there is one, load that project
+            //Binds current project object from Projects meteor collection
+            $scope.currentProject = projectsService.getProjectByID(projectID);
+            console.log('setting current project here: '+projectID);
+            projectsService._currentProject = projectID;
+        } else {
+            // choose
+            angular.element('#whatDoYouWantToDo').modal('show');
+        }
+        
         $scope.showChooseExisting = function() {
             angular.element('#whatDoYouWantToDo').modal('hide');
             angular.element('#existingProject').modal('show');

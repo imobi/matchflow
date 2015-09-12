@@ -6,7 +6,7 @@ Meteor.publish('projects', function () {
                 users: this.userId
             }, 
             {
-                fields: {password:0} //do not publish the password field to the front end
+                fields: {password:0, videoServerToken:0} //do not publish the password field or token to the front end
             }
         );
     } else {
@@ -19,16 +19,18 @@ Meteor.publish('projects', function () {
 //When adding project, generate secret project password and add these to project doc
 Meteor.methods({   
     addProjectToVideoServer: function (project_id) {
+        console.log("generating password for project");
         var pw = "mfpp"+Date.now()+Math.round(Math.random()*1000000000); //This formula generates a very strong, random password
         if (pw.length+Math.round(Math.random)%2===0) pw = pw.split('').reverse().join(''); //Adds more randomness
+        //Update the project document with this new password
         Projects.update({_id: project_id}, {$set: {password: pw}});
         //REST call to Node server adding the project_id and password fields, or add entire project object?
-        console.log("Calling: "+videoServer+"/fileName");
-        HTTP.call("POST",videoServer+"/fileName",
-            { data: {"file_name":"vserve_success.mov"}},
+        console.log("Calling: "+videoServer+"/addProject");
+        HTTP.call("POST",videoServer+"/addProject",
+            { data: {"pid":project_id, "password":pw}},
             function (error, result) {
-                console.log(error);
-                if (!error) {
+                if (error) console.log(error);
+                else {
                     //Session.set("twizzled", true);
                     console.log(result);
                 }
