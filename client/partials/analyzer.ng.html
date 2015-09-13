@@ -73,8 +73,16 @@
     <div style="position:fixed; top:100px; right:0px;">
         <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
     </div-->
-    
-    <mf-video-player video-player-data="videoPlayer"></mf-video-player>
+    <div class="row">
+        <div class="col-lg-2">
+            <mf-tag-tree tag-data="groupedTags"></mf-tag-tree>
+        </div>
+        <div class="col-lg-8">
+            <mf-video-player video-player-data="videoPlayer"></mf-video-player>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
     
     <mf-event-tag-lines ng-model="videoPlayer.timer" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.tags" play-status="videoPlayer.status"></mf-event-tag-lines>
     

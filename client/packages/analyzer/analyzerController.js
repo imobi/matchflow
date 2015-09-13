@@ -112,9 +112,58 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             labels : [],
             data : []
         };
+        // Returns the tags grouped by category in arrays
+        $scope.groupedTags = [];
+        $scope.$watch(
+            'currentProject.tags',
+            function(newVal,oldVal){
+                // This watch rebuilds the tag tree after each new tag add
+                // TODO this can be made MUCH more efficient
+                var newGroupedTagsArray = [];
+                var groupingIndexMap = {};
+                if ($scope.currentProject !== undefined &&
+                        $scope.currentProject.tags !== undefined) {
+                    for (var t = 0; t < $scope.currentProject.tags.length; t++) {
+                        var currentTag = $scope.currentProject.tags[t];
+                        if (groupingIndexMap[currentTag.category] === undefined) {
+                            // add the category and store its index
+                            groupingIndexMap[currentTag.category] = newGroupedTagsArray.length;
+                            newGroupedTagsArray[newGroupedTagsArray.length] = {
+                                name: currentTag.category,
+                                colors: currentTag.colors,
+                                children:[
+                                    {
+                                        name: currentTag.name,
+                                        colors: currentTag.colors
+                                    }
+                                ]
+                            };
+                        } else {
+                            newGroupedTagsArray[
+                                groupingIndexMap[
+                                    currentTag.category
+                                ]
+                            ].children[
+                                newGroupedTagsArray[
+                                    groupingIndexMap[
+                                        currentTag.category
+                                    ]
+                                ].children.length
+                            ] = {
+                                name: currentTag.name,
+                                colors: currentTag.colors
+                            };
+                        }
+                    }
+                }
+                $scope.groupedTags = newGroupedTagsArray;
+            },
+            true
+        );
         
         // Tagline functionality
-        $scope.addTagToTagLine = function (tagObj,groupName) {
+        $scope.addTagToTagLine = function (tagObj,groupObj) {
+            var groupName = groupObj.name;
             // only add if currently playing
             if ($scope.videoPlayer.status === 'playing') {
                 var l = $scope.currentProject.tags.length;
@@ -134,7 +183,11 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     category: groupName,
                     name: tagObj.name,
                     before: tagObj.before,
-                    after: tagObj.after
+                    after: tagObj.after,
+                    colors: {
+                        fg : groupObj.txtColor,
+                        bg : groupObj.bgColor
+                    }
                 };
             }
         };

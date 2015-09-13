@@ -10,7 +10,7 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
 			scope.addThisToTagLine = function(row,col) {
 				var groupObj = scope.localData[row];
 				var tagObj = groupObj.eventList[col];
-				scope.$parent.addTagToTagLine(tagObj,groupObj.name);
+				scope.$parent.addTagToTagLine(tagObj,groupObj);
 			};
 			scope.testT = 'what the hell';
 			scope.$watch(
