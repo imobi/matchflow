@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload',
+    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload) {
         // standard logout functionality
         $scope.logout = function() {
             $meteor.logout().then(function() {
@@ -194,6 +194,48 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 },300);
             } else {
                 angular.element('#whatDoYouWantToDo').modal('show');
+            }
+        };
+
+        //Bring up video upload modal
+        $scope.uploadVideo = function () {
+            angular.element('#videoUploadBox').modal('show');
+        };
+
+        //Watch for when a file is dropped or selected
+        $scope.$watch('files', function (oldVal,newVal) {
+            console.log('Files being watched has changed',oldVal,newVal);
+            $scope.upload($scope.files);
+        });
+
+        //Log files as they are uploaded
+        $scope.status = '';
+        $scope.complete = 'Processing...';
+
+        $scope.upload = function (files) {
+            console.log("File upload starting...");
+            if (files && files.length) {
+                console.log("Inside if",files);
+                for (var i = 0; i < files.length; i++) {
+                  var file = files[i];
+                  if (!file.$error) {
+                    Upload.upload({
+                        url: videoServer+"/upload",
+                        fields: {
+                            'video_name': $scope.videoName
+                        },
+                        file: file
+                    }).progress(function (evt) {
+                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);                        
+                        $scope.status = 'Progress: ' + progressPercentage + '% ' +
+                                    evt.config.file.name + '\n';
+                    }).success(function (data, status, headers, config) {
+                        $timeout(function() {
+                            $scope.complete = 'Original file:' + config.file.name + ', Result: ' + JSON.stringify(data) + '\n';
+                        });
+                    });
+                  }
+                }
             }
         };
     }]

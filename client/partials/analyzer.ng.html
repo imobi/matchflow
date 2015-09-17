@@ -63,6 +63,9 @@
             <span>
                 <a ng-click="closeCurrentProject()"><button class="btn btn-danger">Close</button></a>
             </span>
+            <span>
+                <a ng-click="uploadVideo()"><button class="btn btn-success">Upload Video</button></a>
+            </span>
         </div>
     </div>
     
@@ -140,6 +143,52 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" ng-click="goBack('whatDoYouWantToDo',true)">Back To Dashboard</button>
+                    <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="videoUploadBox" tabindex="-1" role="dialog" aria-labelledby="videoUploadTitle" aria-hidded="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="existingProjectTitle">Upload your video</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">Video name:</div>
+                        <div class="col-md-8"><input type="text" ng-model="videoName"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div ngf-drop ngf-select ng-model="files" class="drop-box" 
+                                ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="false"
+                                accept="video/*" 
+                                ngf-pattern="'.mp4,.3gp,.mpeg,video/*'">Drop here or click to select file</div>
+                            <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            Files:
+                            <ul>
+                                <li ng-repeat="f in files" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}</li>
+                            </ul>
+                        </div>
+                    </div>
+ 
+                    <div class="row">  
+                        <div class="col-md-12">                          
+                            Status:
+                            <pre>{{status}}</pre>
+                            <div class="alert-primary">{{complete}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" ng-click="goBack('videoUploadBox',true)">Back To Dashboard</button>
                     <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
                 </div>
             </div>

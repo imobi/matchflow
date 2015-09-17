@@ -36,5 +36,9 @@ Meteor.methods({
                 }
             }
         );
+    },
+    validToken: function (token) {
+        console.log("Checking if token is recognized by video server...");        
+
     }
 });

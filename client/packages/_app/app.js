@@ -1,1 +1,1 @@
-angular.module('matchflow', ['angular-meteor', 'ui.router']);
+angular.module('matchflow', ['angular-meteor', 'ui.router','ngFileUpload']);
