@@ -11,11 +11,11 @@ angular.module('matchflow').directive(
                 '<div class="mf-search-input">'+
                     '<input '+
                         'id="sitesearch" type="text" '+
-                        'class="form-control" ng-model="value" '+
+                        'class="form-control" ng-model="name" '+
                         'placeholder="search matchflow" '+
                         'autocomplete="off" spellcheck="off" '+
-                        'data-source="projects"/><br>'+
-                        '<ul><li ng-repeat="item in searchDataLocal">[{{ item._id }}:{{ item.timestamp }}] {{ item.value }} ({{ item.type }}) <button ng-click="removeSearchEntry(item._id)">X</button></li></ul>'+
+                        'data-source="searchdata"/><br>'+
+                        '<ul><li ng-repeat="item in searchDataLocal">[{{ item._id }}:{{ item.timestamp }}] {{ item.name }} ({{ item.type }}) <button ng-click="removeSearchEntry(item._id)">X</button></li></ul>'+
                 '</div>',
             link: function(scope,elem,attr) {
                 /*
@@ -24,7 +24,7 @@ angular.module('matchflow').directive(
                  *  - search more function > take to "search filter" page if clicked
                  *  - keyboard integration
                  */
-                scope.value = '';
+                scope.name = '';
                 // Test Function TOREMOVE
                 scope.removeSearchEntry = function(_id) {
                     searchService.removeSearchEntry(_id);
@@ -33,7 +33,7 @@ angular.module('matchflow').directive(
                 Meteor.typeahead(inputElem);
                 elem.find('input').on('typeahead:selected',function(event,object) {
                     // TODO take user to the item to be followed
-                    console.log('Take me to: '+object.value);
+                    console.log('Take me to: '+object.name);
                 });
             }
         };

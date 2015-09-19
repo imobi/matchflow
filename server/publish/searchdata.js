@@ -63,7 +63,7 @@ Meteor.publish('searchdata', function () {
         }, {
             fields: {
                 _id:1,
-                value:1, // searchable field (search meta)
+                name:1, // searchable field (search meta)
                 permissions:1, // array
                 type:1, // search obj type: [profile, team, league, eventGroup, project, video, report template etc...]
                 linkbackId:1, // this consists of the id of the item being searched on

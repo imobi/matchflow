@@ -27,7 +27,7 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
                     var _id = projectObjects[0]._id;
                     // add a search entry for the project
                     searchService.addSearchEntry(
-                        // value, type, permissions, linkbackId
+                        // name, type, permissions, linkbackId
                         project.name,
                         'project',
                         [ // TODO run through all permissions and add them, not just users, 

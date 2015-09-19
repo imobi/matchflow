@@ -6,7 +6,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
          * types which will allow the search to function much faster.
          *  Search Entry fields: {
                 _id:1,
-                value:1, // searchable field (search meta)
+                name:1, // searchable field (search meta)
                 permissions:1, // array
                 type:1, // search obj type: [profile, team, league, eventGroup, project, video, report template etc...]
                 linkbackId:1 // this consists of the id of the item being searched on
@@ -14,6 +14,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
          */
         // used to store the search data meteor collection
     	_searchData: { empty: true },
+        _searchDataMap : {},
         // bind the search data collection to this object
         bindSearchDataCollection: function () {
             console.log('SearchService: binding searchData collection...');
@@ -40,7 +41,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
             var searchResults = undefined;
             for (var s = 0; s < this._searchData.length; s++) {
                 var searchLink = this._searchData[s];
-                if (searchLink.value !== undefined && searchLink.value.indexOf(criteria)>=0) {
+                if (searchLink.name !== undefined && searchLink.name.indexOf(criteria)>=0) {
                     searchResults[searchResults.length] = searchLink;
                 }
             }
@@ -51,7 +52,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
             // as well as the search buffer
         },
         // TODO add a function for updating an existing search entry
-        addSearchEntry : function(value,type,permissions,id) {
+        addSearchEntry : function(name,type,permissions,id) {
             console.log('SearchService: Trying to add search entry');
             // add search link to the collection, it will persist a callback 
             // which performs the required action for that type of link
@@ -59,7 +60,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
             if (!this._searchData.empty) {
                 this._searchData.save(
                     {
-                        value : value,
+                        name : name,
                         type : type,
                         permissions : permissions,
                         linkbackId : id,
@@ -84,10 +85,11 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
             console.log('SearchService: Trying to remove search entry by type and linkbackid');
             // remove search link from the collection using type and the linkbackId
             if (!this._searchData.empty) {
-                this._searchData.remove({
+                var searchEntry = $meteor.object(SearchData,{
                     type : type,
                     linkbackId : id
-                });
+                },true);
+                this._searchData.remove(searchEntry._id);
             }
         }
     };
