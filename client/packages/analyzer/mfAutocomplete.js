@@ -4,7 +4,9 @@ angular.module('matchflow').directive('mfAutocomplete', function($compile) {
 		scope: {
 			labelName: '=label',
 			autocompleteData: '=searchData',
-			selectedGroups: '=ngModel'
+			selectedGroups: '=ngModel',
+            searchFieldName : '=searchField',
+            keyFieldName : '=keyField'
 		},
 		restrict: 'E',
 		template: '<div class="input-group mf-autocomplete-container">'+
@@ -16,40 +18,41 @@ angular.module('matchflow').directive('mfAutocomplete', function($compile) {
 					  '</div>'+
 				  '</div>',
 		link: function(scope, element, attrs) {
+            var searchField = scope.searchFieldName !== undefined ? scope.searchFieldName : 'name';
+            var keyField = scope.keyFieldName !== undefined ? scope.keyFieldName : 'name';
 			scope.selectedGroupsMap = {};
 			scope.searchValue = '';
 			scope.updateToggle = false;
-			scope.resultSelected = function(selectedName) {
+			scope.resultSelected = function(selectedKey) {
 				// TODO add selected result to the selection box and clear the input area
 				element.find('.mf-autocomplete-list').css('display','none');
-				if (scope.selectedGroupsMap[selectedName] === undefined) {
+				if (scope.selectedGroupsMap[selectedKey] === undefined) {
                     // BAD, need to fix this reference properly
-					var actualGroup = scope.autocompleteData.groupMap[selectedName];
-					scope.selectedGroupsMap[selectedName] = scope.selectedGroups.length;
+					var actualGroup = scope.autocompleteData.groupMap[selectedKey];
+					scope.selectedGroupsMap[selectedKey] = scope.selectedGroups.length;
 					scope.selectedGroups[scope.selectedGroups.length] = actualGroup;
 				}
 				scope.searchValue = '';
 			};
-			scope.removeSelected = function(name) {
-				scope.selectedGroups.splice(scope.selectedGroupsMap[name],1);
-				scope.selectedGroupsMap[name] = undefined;
+			scope.removeSelected = function(selectedKey) {
+				scope.selectedGroups.splice(scope.selectedGroupsMap[selectedKey],1);
+				scope.selectedGroupsMap[selectedKey] = undefined;
 				// now run through remainder and update index's
 				for (var s = 0; s < scope.selectedGroups.length; s++) {
 					var group = scope.selectedGroups[s];
-					scope.selectedGroupsMap[group.name] = s;
+					scope.selectedGroupsMap[group[selectedKey]] = s;
 				}
 			};
 			scope.$watch(
 				'searchValue',
 				function(newValue,oldValue) {
 					var searchResults = '<ul class="list-group">';
-					
 					var matchFound = false;
 					for (var i = 0; i < scope.autocompleteData.groupList.length; i++) {
 						var result = scope.autocompleteData.groupList[i];
-						if (result.name !== undefined && result.name.indexOf(scope.searchValue)>=0) {
+						if (result[searchField] !== undefined && result[searchField].indexOf(scope.searchValue)>=0) {
 							matchFound = true;
-							searchResults += '<li class="list-group-item"><a ng-click="resultSelected(\''+result.name+'\')"><div class="mf-fully-clickable">'+result.name+'</div></a></li>';
+							searchResults += '<li class="list-group-item"><a ng-click="resultSelected(\''+result[keyField]+'\')"><div class="mf-fully-clickable">'+result[searchField]+'</div></a></li>';
 						}
 					}
 					if (!matchFound) {
@@ -73,20 +76,24 @@ angular.module('matchflow').directive('mfAutocomplete', function($compile) {
 				'selectedGroups',
 				function(newValue,oldValue) {
 					var selectedGroups = '';
-					for (var i = 0; i < scope.selectedGroups.length; i++) {
-						var group = scope.selectedGroups[i];
-						var eventNames = '';
-						if (group.eventList.length > 0) {
-							eventNames = group.eventList[0].name;
-							if (group.eventList.length > 1) {
-								for (var j = 1; j < group.eventList.length; j++) {
-									eventNames += ', '+group.eventList[j].name;
-								}
-							}
-						}
-						selectedGroups += '<li class="list-group-item" style="position:relative; color:'+group.txtColor+'; background-color:'+group.bgColor+';">'+group.name+' ['+eventNames+']<a ng-click="removeSelected(\''+group.name+'\')" class="mf-icon-border"><i class="glyphicon glyphicon-trash"></i></a></li>';
-					}
-					element.find('.mf-selected-list').html($compile(selectedGroups)(scope));
+                    // TODO convert this to use a template
+                    if (scope.selectedGroups !== undefined) {
+                        for (var i = 0; i < scope.selectedGroups.length; i++) {
+                            var group = scope.selectedGroups[i];
+                            var description = '';
+                            if (group.eventList !== undefined && group.eventList.length > 0) {
+                                description = ' ['+group.eventList[0][searchField];
+                                if (group.eventList.length > 1) {
+                                    for (var j = 1; j < group.eventList.length; j++) {
+                                        description+= ', '+group.eventList[j][searchField];
+                                    }
+                                }
+                                description += ']';
+                            }
+                            selectedGroups += '<li class="list-group-item" style="position:relative; color:'+group.txtColor+'; background-color:'+group.bgColor+';">'+group[searchField]+''+description+'<a ng-click="removeSelected(\''+group[keyField]+'\')" class="mf-icon-border"><i class="glyphicon glyphicon-trash"></i></a></li>';
+                        }
+                    }
+                    element.find('.mf-selected-list').html($compile(selectedGroups)(scope));
 				}, 
 				true
 			);

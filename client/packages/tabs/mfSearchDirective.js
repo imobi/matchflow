@@ -1,10 +1,12 @@
 // USES: typeahead - https://github.com/sergeyt/meteor-typeahead/
 angular.module('matchflow').directive(
-    'mfSearch', function($compile) {
+    'mfSearch', ['$compile','searchService',function($compile,searchService) {
         return {
             restrict: 'E',
             replace: true,
-            scope: true,
+            scope: {
+                searchDataLocal : '=searchData'
+            },
             template: 
                 '<div class="mf-search-input">'+
                     '<input '+
@@ -12,10 +14,21 @@ angular.module('matchflow').directive(
                         'class="form-control" ng-model="value" '+
                         'placeholder="search matchflow" '+
                         'autocomplete="off" spellcheck="off" '+
-                        'data-source="projects"/>'+ // TODO swap this to a search collection
+                        'data-source="projects"/><br>'+
+                        '<ul><li ng-repeat="item in searchDataLocal">[{{ item._id }}:{{ item.timestamp }}] {{ item.value }} ({{ item.type }}) <button ng-click="removeSearchEntry(item._id)">X</button></li></ul>'+
                 '</div>',
             link: function(scope,elem,attr) {
+                /*
+                 * Additional Functionality:
+                 *  - predictive
+                 *  - search more function > take to "search filter" page if clicked
+                 *  - keyboard integration
+                 */
                 scope.value = '';
+                // Test Function TOREMOVE
+                scope.removeSearchEntry = function(_id) {
+                    searchService.removeSearchEntry(_id);
+                };
                 var inputElem = elem.find('input');
                 Meteor.typeahead(inputElem);
                 elem.find('input').on('typeahead:selected',function(event,object) {
@@ -25,4 +38,4 @@ angular.module('matchflow').directive(
             }
         };
     }
-);
+]);

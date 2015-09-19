@@ -2,10 +2,42 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="tabFilterDialogTitle">Tab Feed Filters</h4>
+                <h4 class="modal-title" id="tabFilterDialogTitle">Tab Filter Feeds</h4>
             </div>
             <div class="modal-body">
+                <div class="mf-tab-manager">
+                    <ul id="tabFilterManagerList">
+                        <li>
+                            
+                            <div class="form-group">
+                                <label for="newTabName">Tab Name:</label><input id="newTabName" type="text" ng-model="tabManager.newTabData.name" class="form-control" />
+                                <label for="newTabName">Filters:</label><input id="newTabFilters" type="text" ng-model="tabManager.newTabData.filtersStr" class="form-control" />
+                                <br>
+                                <button ng-click="tabManager.addTabFilter();" class="form-control btn btn-success btn-full">Create New Tab Filter</button>
+                            </div>
 
+                        </li>
+                        <li ng-repeat="tab in user.profile.feed">
+                            <div class="panel-group" role="tablist" aria-multiselectable="false">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="{{ tab._id }}_heading">
+                                        <h4 class="panel-title" style="position:relative;">
+                                            <a role="button" data-toggle="collapse" data-parent="#tabFilterList" href="#collapse_{{ tab._id }}" aria-expanded="false" aria-controls="collapse_{{ tab._id }}">
+                                                {{ tab.name }}
+                                            </a>
+                                            <a style="position:absolute; right:0px;" ng-click="tabManager.removeTabFilter(tab._id)" ng-if="isTabEditable(tab)"><span class="glyphicon glyphicon-trash"></span></a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse_{{ project._id }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="{{ tab._id }}_heading">
+                                        <div class="panel-body">
+                                            Editable Tab DATA
+                                        </div>
+                                    </div><!-- collapse panel -->
+                                </div><!-- panel -->
+                            </div><!-- panel group -->
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

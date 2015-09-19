@@ -66,3 +66,9 @@
 .tt-suggestion p {
     margin: 0;
 }
+
+/* tab filter feed manager */
+.mf-tab-manager > ul {
+    list-style: none;
+    padding-left: 0px;
+}

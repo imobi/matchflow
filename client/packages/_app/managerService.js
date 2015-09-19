@@ -1,4 +1,4 @@
-angular.module('matchflow').factory('managerService',['$meteor','utilsService',function($meteor,utilsService){
+angular.module('matchflow').factory('managerService',['$meteor','utilsService','userService',function($meteor,utilsService,userService){
     // manager service
     // these will all split into their own services in future
     return {
@@ -84,6 +84,35 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService',f
         },
         profileManager : {},
         leagueManager : {},
-        teamManager : {}
+        teamManager : {},
+        getTabFilterManager : function() {
+            return {
+                newTabData : {
+                    name: '',
+                    filtersStr: '',
+                    filters: [
+                        /* TODO build a filter builder
+                         { 
+                            value: 'abc',
+                            type: 'OR'/'AND',
+                            not: true/false
+                         } or
+                         {
+                            type: 'BRACKETS',
+                            value: [...]
+                         }
+                         */
+                    ]
+                },
+                addTabFilter : function() {
+                    // access the newTabFilter object and add to the user
+
+                },
+                removeTabFilter : function(_id) {
+                    // delete the specified tab off the user
+
+                }
+            };
+        }
     };
 }]);

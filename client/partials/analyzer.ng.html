@@ -60,6 +60,7 @@
             <span class="info-text">
                 {{ currentProject.gameDate}}
             </span>
+            <!-- TODO we should show the projects permissions (who we sharing it with) -->
             <span>
                 <a ng-click="closeCurrentProject()"><button class="btn btn-danger">Close</button></a>
             </span>
@@ -113,6 +114,9 @@
                             <input type="date" ng-model="newProject.selectedGameDate" class="form-control"/>
                         </div>
                         <mf-autocomplete label="'Event Groups:'" search-data="newProject.eventGroupData" ng-model="newProject.selectedEventGroups"></mf-autocomplete>
+                        <!-- TODO allow the user to set the project permissions here, 
+                             this is necessary for the searching functionality  to work-->
+                        <mf-autocomplete label="'Permissions:'" search-field="'type'" key-field="'id'" search-data="newProject.permissionsData" ng-model="newProject.selectedPermissions"></mf-autocomplete>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -42,7 +42,8 @@
                     <mf-notes note-data="user.profile.notes"></mf-notes>
                 </div>
                 <div class="col-sm-9 col-sm-pull-3">
-                    <mf-search></mf-search>
+                    <mf-search search-data="searchData"></mf-search>
+                    <button ng-click="addSearchEntry()">Add Sample Search Entry</button><br><br>
                     <!-- Tab Area -->
                     <mf-tabs tab-data="user.profile.feed"></mf-tabs>
                 </div>

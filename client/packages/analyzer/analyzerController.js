@@ -85,6 +85,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             REWIND:'rewinding'
         };
         // INPUT FORMS
+        // Populate the users event groups map and list
         var userEventGroupMap = {};
         var userEventGroupsList = [];
         for (var e = 0; e < $scope.user.profile.eventGroups.length; e++) {
@@ -92,18 +93,67 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             userEventGroupsList[userEventGroupsList.length] = group;
             userEventGroupMap[group.id] = group;
         }
+        // Populate the permissions map and list
+        /*
+        * Permissions Array:
+        * array of objects { 
+        *   type[
+        *      public (anyone),
+        *      league (all teams in league),
+        *      team (all profiles in team),
+        *      user (specific user),
+        *      private (owner only)
+        *   ], 
+        *   id[
+        *      string (the specific id of the type, empty string if public)
+        *   ]
+        * }
+        */
+        var permissionsMap = {};
+        var permissionsList = [];
+        // first add all share groups
+        for (var s = 0; s < $scope.user.profile.shareGroups.length; s++) {
+            var group = $scope.user.profile.shareGroups[s];
+            var permissionItem = { // these get expanded out on saving to other items such as a searchEntry creation
+                type: 'group',
+                group: group,
+                id: group.id
+            };
+            permissionsList[permissionsList.length] = permissionItem;
+            permissionsMap[group.id] = permissionItem;
+        }
+        // TODO add a permission entry for the user himself
+        var userPermission = {
+            type: 'Private',
+            id: $scope.user._id // ID of the current user
+        };
+        permissionsList[permissionsList.length] = userPermission;
+        permissionsMap[userPermission.id] = userPermission;
+        var publicPermission = {
+            type: 'Public',
+            id: 'public'
+        };
+        permissionsList[permissionsList.length] = publicPermission;
+        permissionsMap[publicPermission.id] = publicPermission;
+        // TODO now add all leagues, and teams this user has access to so they can add them specifically as a permission
+        
         $scope.newProject = {
             name: '',
             users: [$scope.user._id], // we always make sure this user has access
             selectedTeams: '',
             selectedLeague: '',
             selectedEventGroups: [],// we save an array of references
+            selectedPermissions: [],// we save an array of references
             selectedGameDate: new Date(),
             // INHERITED DATA
             // we pull through important references for the create project dialog
             eventGroupData : {
                 groupList : userEventGroupsList,
                 groupMap : userEventGroupMap
+            },
+            permissionsData : {
+                groupList : permissionsList,
+                groupMap : permissionsMap
             }
         };
         // CHART DATA
@@ -197,6 +247,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedTeams !== undefined && $scope.newProject.selectedTeams.length > 0 &&
                     $scope.newProject.selectedLeague !== undefined && $scope.newProject.selectedLeague.length > 0 &&
                     $scope.newProject.selectedEventGroups !== undefined && $scope.newProject.selectedEventGroups.length > 0 &&
+                    $scope.newProject.selectedPermissions !== undefined && $scope.newProject.selectedPermissions.length > 0 &&
                     $scope.newProject.selectedGameDate !== undefined) {
                 // save new project into meteor
                 $scope.currentProject.name = $scope.newProject.name;
@@ -205,33 +256,35 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
                 $scope.currentProject.gameDate = $scope.newProject.selectedGameDate;
-                             
-                // push one project in
-                $scope.projects.save($scope.currentProject).then(function(projectObjects){
-                    console.log('saved project',projectObjects);
-                    $scope.currentProject = projectsService.getProjectByID(projectObjects[0]._id);
-                    //Generate a password for project and add to video server's white list
-                    Meteor.call('addProjectToVideoServer',$scope.currentProject._id);
-
-                    // now we can hide and clear things
-                    angular.element('#newProjectDetails').modal('hide');
-                    $scope.newProject = {
-                        name: '',
-                        users: [$scope.user._id], // we always make sure this user has access
-                        selectedTeams: '',
-                        selectedLeague: '',
-                        selectedEventGroups: [],// we save an array of references
-                        selectedGameDate: '',
-                        // INHERITED DATA
-                        // we pull through important references for the create project dialog
-                        eventGroupData : {
-                            groupList : userEventGroupsList,
-                            groupMap : userEventGroupMap
-                        }
-                    };
-                },function(error){
-                    console.log('error project not saved',error);
-                });
+                $scope.currentProject.permissions = $scope.newProject.selectedPermissions;
+                // save the project here
+                projectsService.saveProject(
+                    $scope.currentProject,
+                    function(_id){
+                        $scope.currentProject = projectsService.getProjectByID(_id);
+                        // now we can hide and clear things
+                        angular.element('#newProjectDetails').modal('hide');
+                        $scope.newProject = {
+                            name: '',
+                            users: [$scope.user._id], // we always make sure this user has access
+                            selectedTeams: '',
+                            selectedLeague: '',
+                            selectedEventGroups: [],// we save an array of references
+                            selectedPermissions: [],// we save an array of references
+                            selectedGameDate: '',
+                            // INHERITED DATA
+                            // we pull through important references for the create project dialog
+                            eventGroupData : {
+                                groupList : userEventGroupsList,
+                                groupMap : userEventGroupMap
+                            },
+                            permissionsData : {
+                                groupList : permissionsList,
+                                groupMap : permissionsMap
+                            }
+                        };
+                    }
+                );
             } else {
                 // TODO form field validation
             }

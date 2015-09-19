@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$state','userService','projectsService','managerService',
-    function ($scope,$meteor,$state,userService,projectsService,managerService) {
+angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$state','userService','projectsService','managerService','searchService',
+    function ($scope,$meteor,$state,userService,projectsService,managerService,searchService) {
         $scope.logout = function() {
             $meteor.logout().then(function() {
                 $state.go('home');
@@ -10,12 +10,30 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
                 console.log('Error trying to logout');
             });
         };
+        // Test Function TOREMOVE
+        $scope.addSearchEntry = function() {
+            searchService.addSearchEntry('Test','project',[
+                {
+                    type: 'user',
+                    id: $scope.user._id
+                }
+            ],99);
+        };
+        
+        // LOAD EVERYTHING HERE
         // Loading the user collection onto the scope
         $scope.user = userService.getCurrentUserData();
+        
+        // Loading the search data
+        $scope.searchData = searchService.initSearchData();
         
         // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
         $scope.currentAnalyzerProjectId = projectsService._currentProject === undefined ? 'choose': projectsService._currentProject;
+        
+        // manage tab filter feeds
+        $scope.tabManager = managerService.getTabFilterManager();
+        // TODO need a watch to do the conversion for the dataobject
         
         // manage events service
         $scope.manageEvents = managerService.getEventsManager();

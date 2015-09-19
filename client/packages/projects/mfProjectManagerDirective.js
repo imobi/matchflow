@@ -1,4 +1,4 @@
-angular.module('matchflow').directive('mfProjectManager', ['$compile','$location','$timeout',function($compile,$location,$timeout) {
+angular.module('matchflow').directive('mfProjectManager', ['$compile','$location','$timeout','projectsService',function($compile,$location,$timeout,projectsService) {
         return {
             replace: true,
             scope: {
@@ -44,6 +44,10 @@ angular.module('matchflow').directive('mfProjectManager', ['$compile','$location
                 };
                 scope.removeProject = function(id) {
                     //TODO: Add confirmation: Are you sure you want to delete?
+                    var result = confirm('Are you sure you want to delete this project?');
+                    if (result) {
+                        projectsService.removeProject(id);
+                    }
                 };
             }
         };
