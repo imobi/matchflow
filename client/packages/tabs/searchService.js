@@ -63,7 +63,7 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
                         type : type,
                         permissions : permissions,
                         linkbackId : id,
-                        timestamp : new Date().getTime() // this should be done service side
+                        timestamp : new Date().getTime() // this should be done service side or be in GMT format
                     },
                     function(error,_id){
                         console.log('SearchService: Search entry inserted ['+_id+']');

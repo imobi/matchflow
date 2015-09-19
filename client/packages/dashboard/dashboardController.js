@@ -12,12 +12,17 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         };
         // Test Function TOREMOVE
         $scope.addSearchEntry = function() {
-            searchService.addSearchEntry('Test','project',[
-                {
-                    type: 'user',
-                    id: $scope.user._id
-                }
-            ],99);
+            searchService.addSearchEntry(
+                'Test', // value
+                'project', // type
+                [ // search entry permissions: who can see this?
+                    {
+                        type: 'private',
+                        id: $scope.user._id
+                    }
+                ],
+                99 // linkbackId the id of the type of entry being added
+            );
         };
         
         // LOAD EVERYTHING HERE

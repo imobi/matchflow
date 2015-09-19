@@ -53,7 +53,7 @@ Meteor.publish('searchdata', function () {
         }
         // direct permission
         orCriteria[orCriteria.length] = {
-            'permissions.type': 'user',
+            'permissions.type': 'private',
             'permissions.id': currentUser._id
         };
         // now we return the results of the search call, this returns all the data 
