@@ -1,3 +1,13 @@
+/*
+ * User Object:
+ *  - _id
+ *  - profile
+ *  - emails
+ *  - roles
+ *  - services
+ *  - tabs
+ *  - shareGroups
+ */
 angular.module('matchflow').factory('userService',['$rootScope','$meteor',function($rootScope,$meteor){
     // return the aquired user data object here
     return {

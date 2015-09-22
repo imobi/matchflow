@@ -19,25 +19,52 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
         getProjectByID : function(id) {
           	return $meteor.object(Projects,id,true);
         },
-        saveProject : function(project,callback) {
+        saveProject : function(project,user,callback) {
             if (!this._projectsObject.empty) {
                 // push one project in
                 this._projectsObject.save(project).then(function(projectObjects){
                     console.log('ProjectService: saved project',projectObjects);
                     var _id = projectObjects[0]._id;
+                    // TODO run through all permissions and add them, not just users, 
+                    // ALSO convert any groups into the individual permissions
+                    var permissionsArr = [
+                        { // Compulsory
+                            type: 'private', // this is specifically for the owner/creator of the project
+                            id: user._id
+                        }
+                    ];
+                    // group > league > team > user
+                    var shareGroupMap = {};
+                    for (var s = 0; s < user.shareGroups.length; s++) {
+                        shareGroupMap[user.shareGroups[s]._id] = user.shareGroups[s];
+                    }
+                    // we reduce the permissions into one array
+                    for (var p = 0; p < project.permissions.length; p++) {
+                        var permObj = project.permissions[p];
+                        if (permObj.type === 'group') {
+                            var groupObj = shareGroupMap[permObj.id]; // grab this from the shareGroups
+                            for (var g = 0; g < groupObj.shareList.length; g++) {
+                                var item = groupObj.shareList[g];
+                                permissionsArr[permissionsArr.length] = {
+                                    type : item.type,
+                                    id : item.id
+                                };
+                            }
+                        } else {
+                            permissionsArr[permissionsArr.length] = {
+                                type : permObj.type,
+                                id : permObj.id
+                            };
+                        }
+                    }
+                    
+                    
                     // add a search entry for the project
                     searchService.addSearchEntry(
                         // name, type, permissions, linkbackId
                         project.name,
                         'project',
-                        [ // TODO run through all permissions and add them, not just users, 
-                          // ALSO convert any groups into the individual permissions
-                          // Just adding the following for testing purposes
-                            {
-                                type: 'private',
-                                id: project.users[0] 
-                            }
-                        ],
+                        permissionsArr,
                         _id
                     );
                     // call the callback, to hide and load the project

@@ -33,17 +33,17 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.showCreateNew = function() {
             angular.element('#whatDoYouWantToDo').modal('hide');
             $scope.currentProject = {
-                public: true,
-                users: [],
                 name: '',
-                search_meta: [],
+                owner: $scope.user._id,
+                permissions: [],
+                searchMeta: [],
                 videoDate: "",
                 videoURL: "",
                 creationDate: '',
                 leagueSelection: '',
                 eventGroupSelection:[],
                 teamSelection:[],
-                event_groups: [],
+                eventGroups: [],
                 tags: [],
                 password: "",
                 videoServerToken: null
@@ -122,13 +122,13 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             permissionsList[permissionsList.length] = permissionItem;
             permissionsMap[group.id] = permissionItem;
         }
-        // TODO add a permission entry for the user himself
-        var userPermission = {
+        // add a permission entry for the user himself, this has to be compulsory so no need to have this here
+        /*var userPermission = {
             type: 'Private',
             id: $scope.user._id // ID of the current user
         };
         permissionsList[permissionsList.length] = userPermission;
-        permissionsMap[userPermission.id] = userPermission;
+        permissionsMap[userPermission.id] = userPermission;*/
         var publicPermission = {
             type: 'Public',
             id: 'public'
@@ -139,7 +139,6 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         
         $scope.newProject = {
             name: '',
-            users: [$scope.user._id], // we always make sure this user has access
             selectedTeams: '',
             selectedLeague: '',
             selectedEventGroups: [],// we save an array of references
@@ -247,11 +246,10 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                     $scope.newProject.selectedTeams !== undefined && $scope.newProject.selectedTeams.length > 0 &&
                     $scope.newProject.selectedLeague !== undefined && $scope.newProject.selectedLeague.length > 0 &&
                     $scope.newProject.selectedEventGroups !== undefined && $scope.newProject.selectedEventGroups.length > 0 &&
-                    $scope.newProject.selectedPermissions !== undefined && $scope.newProject.selectedPermissions.length > 0 &&
-                    $scope.newProject.selectedGameDate !== undefined) {
+                    $scope.newProject.selectedPermissions !== undefined && $scope.newProject.selectedGameDate !== undefined) { // if no permissions are defined, its just private
                 // save new project into meteor
                 $scope.currentProject.name = $scope.newProject.name;
-                $scope.currentProject.users = $scope.newProject.users;
+                // owner is already set, no need to set it again
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
@@ -266,7 +264,6 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                         angular.element('#newProjectDetails').modal('hide');
                         $scope.newProject = {
                             name: '',
-                            users: [$scope.user._id], // we always make sure this user has access
                             selectedTeams: '',
                             selectedLeague: '',
                             selectedEventGroups: [],// we save an array of references

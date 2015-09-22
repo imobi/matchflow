@@ -1,4 +1,4 @@
-angular.module('matchflow').factory('managerService',['$meteor','utilsService','userService',function($meteor,utilsService,userService){
+angular.module('matchflow').factory('managerService',['$meteor','utilsService','userService','tabService',function($meteor,utilsService,userService,tabService){
     // manager service
     // these will all split into their own services in future
     return {
@@ -105,12 +105,12 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
                     ]
                 },
                 addTabFilter : function() {
-                    // access the newTabFilter object and add to the user
-
+                    // access the newTabData object and add to the user
+                    tabService.addTab(this.newTabData.name,this.newTabData.filtersStr);
                 },
                 removeTabFilter : function(_id) {
                     // delete the specified tab off the user
-
+                    tabService.removeTab(_id);
                 }
             };
         }
