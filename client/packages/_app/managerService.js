@@ -108,9 +108,9 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
                     // access the newTabData object and add to the user
                     tabService.addTab(this.newTabData.name,this.newTabData.filtersStr);
                 },
-                removeTabFilter : function(_id) {
+                removeTabFilter : function(id) {
                     // delete the specified tab off the user
-                    tabService.removeTab(_id);
+                    tabService.removeTab(id);
                 }
             };
         }

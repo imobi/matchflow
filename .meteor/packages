@@ -15,3 +15,5 @@ mrt:jquery-easing
 alanning:roles
 sergeyt:typeahead
 http
+tmeasday:publish-counts
+netanelgilad:ng-infinite-scroll

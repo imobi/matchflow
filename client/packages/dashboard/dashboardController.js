@@ -38,7 +38,6 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
         
         // manage tab filter feeds
         $scope.tabManager = managerService.getTabFilterManager();
-        // TODO need a watch to do the conversion for the dataobject
         
         // manage events service
         $scope.manageEvents = managerService.getEventsManager();

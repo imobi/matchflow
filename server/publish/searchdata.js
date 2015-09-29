@@ -1,4 +1,12 @@
 /*
+ * Search Object:
+ *     _id - unique id
+ *     name - searchable field (search meta)
+ *     permissions - array
+ *     type - search obj type: [profile, team, league, eventGroup, project, video, report template etc...]
+ *     linkbackId - this consists of the id of the item being searched on
+ *     timestamp - when the search entry was added/updated
+ *
  * Permissions Array:
  * array of objects { 
  *   type[
@@ -14,7 +22,7 @@
  * }
  */
 
-Meteor.publish('searchdata', function () {
+Meteor.publish('searchdata', function (opts) {
     if (Roles.userIsInRole(this.userId, ['profile-manager'])) { // must be a registered user
         console.log('Finding search data');
         // need to determine the users permissions and customize the query
@@ -56,11 +64,29 @@ Meteor.publish('searchdata', function () {
             'permissions.type': 'private',
             'permissions.id': currentUser._id
         };
+        
+        // counts module.. couldn't get it to work: meant to return the full number of entries
+        Counts.publish(
+            this, 
+            'numberOfSearchEntries', 
+            SearchData.find({
+                    $or: orCriteria
+            }), 
+            {
+                noReady: true
+            }
+        );
+        
         // now we return the results of the search call, this returns all the data 
         // (in the future we can make this more efficient)
+        if (opts) {
+            console.log('SearchData: skip-'+opts.skip+', limit-'+opts.limit);
+        }
         return SearchData.find({
             $or: orCriteria
         }, {
+            skip: opts ? opts.skip : undefined,
+            limit: opts ? opts.limit : undefined,
             fields: {
                 _id:1,
                 name:1, // searchable field (search meta)

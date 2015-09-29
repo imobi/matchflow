@@ -5,18 +5,18 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
          * from the database. It might make sense to break the search objects into different
          * types which will allow the search to function much faster.
          *  Search Entry fields: {
-                _id:1,
-                name:1, // searchable field (search meta)
-                permissions:1, // array
-                type:1, // search obj type: [profile, team, league, eventGroup, project, video, report template etc...]
-                linkbackId:1 // this consists of the id of the item being searched on
-            }
+         *      _id
+         *      name - searchable field (search meta)
+         *      permissions - array
+         *      type - search obj type: [profile, team, league, eventGroup, project, video, report template etc...]
+         *      linkbackId - this consists of the id of the item being searched on,
+         *      timestamp - time when the entry was added/updated
+         *  }
          */
         // used to store the search data meteor collection
     	_searchData: { empty: true },
-        _searchDataMap : {},
         // bind the search data collection to this object
-        bindSearchDataCollection: function () {
+        bindSearchDataCollection: function () { // TODO need to make separate collections for each filter
             console.log('SearchService: binding searchData collection...');
         	this._searchData = $meteor.collection(SearchData,true).subscribe('searchdata');
         },        
@@ -28,28 +28,40 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
             // return a reference to the searchData, maybe we should hide this...
           	return this._searchData;
         },       
-        search : function(criteria) {
+        search : function(filter,sort) {
             console.log('SearchService: searching...');
-            // TODO load all search links matching the criteria mentioned
-            // this should probably load via an interval, startIndex, endIndex, and load more 
-            // if scrolling occurs, keep incrementing the endIndex, we can pre-load the next
-            // 20 items, until there are none left to allow for smooth loading and scrolling
-            // maybe the ability of adding multiple items to a search filter, to keep refining
-            
-            // The entire search data is already loaded into the UI, so we just need to run through it
-            // TODO we should also rank for similarity (smaller parts of the criteria etc)
-            var searchResults = undefined;
-            for (var s = 0; s < this._searchData.length; s++) {
-                var searchLink = this._searchData[s];
-                if (searchLink.name !== undefined && searchLink.name.indexOf(criteria)>=0) {
-                    searchResults[searchResults.length] = searchLink;
-                }
+            if (!this._searchData.empty) {
+                return this._searchData.find(filter,sort);
+            } else {
+                return [
+                    {
+                        _id: 'public_'+new Date().getTime(),
+                        name: 'No Results Matching Filter Found...',
+                        type: 'other',
+                        permissions: [],
+                        linkbackId: -1,
+                        timestamp: new Date().getTime()
+                    }
+                ];
             }
-            return searchResults;
         },
-        clearSearch : function() {
-            // TODO implement the search clear, this ensures that the users search criteria,
-            // as well as the search buffer
+        // this initializes a collection and subscription for a specific tab
+        initTabFilter : function(tabFilter,entriesPerPage,currentPage,sort) {
+            if (tabFilter !== undefined) {
+                return $meteor.collection(function () {
+                    return SearchData.find(
+                        tabFilter,
+                        sort
+                    );
+                }).subscribe('searchdata',{
+                    limit: entriesPerPage,
+                    skip: (currentPage-1)*entriesPerPage,
+                    sort: sort
+                });
+            } else {
+                return undefined;
+            }
+            
         },
         // TODO add a function for updating an existing search entry
         addSearchEntry : function(name,type,permissions,id) {
@@ -91,6 +103,9 @@ angular.module('matchflow').factory('searchService',['$meteor',function($meteor)
                 },true);
                 this._searchData.remove(searchEntry._id);
             }
+        },
+        getTotalSearchEntries : function() {
+            return $meteor.object(Counts,'numberOfSearchEntries',false).count;
         }
     };
 }]);

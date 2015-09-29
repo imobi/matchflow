@@ -19,9 +19,9 @@ angular.module('matchflow').directive(
                     var tabsNavHtml = '<ul class="nav nav-tabs" role="tablist">';
                     var tabsContentHtml = '<div class="tab-content">';
                     // add the public tab by default
-                    tabsNavHtml += '<li id="defaultTabHeader" role="presentation" class="active"><a href="#defaultTab" aria-controls="settings" role="tab" data-toggle="tab">Public Feed</a></li>';
-                    tabsContentHtml += '<div id="defaultTab" role="tabpanel" class="mf-tab-container tab-pane fade in active">'+
-                        '<mf-tab-feed feed-filter="\'public\'"></mf-tab-feed>' +
+                    tabsNavHtml += '<li id="public_tab" role="presentation" class="active"><a href="#public" aria-controls="settings" role="tab" data-toggle="tab">Public Feed</a></li>';
+                    tabsContentHtml += '<div id="public" role="tabpanel" class="mf-tab-container tab-pane fade in active">'+
+                        '<mf-tab-feed tab-id="\'public\'"></mf-tab-feed>' +
                     '</div>';
                     if (scope.tabs !== undefined) {
                         // add persons custom tabs
@@ -30,7 +30,7 @@ angular.module('matchflow').directive(
                             var animationCSS = ' fade';
                             tabsNavHtml += '<li id="'+tab.id+'_tab" role="presentation"><a href="#'+tab.id+'" aria-controls="settings" role="tab" data-toggle="tab">'+tab.name+'</a></li>';
                             tabsContentHtml += '<div id="'+tab.id+'" role="tabpanel" class="mf-tab-container tab-pane">'+
-                                '<mf-tab-feed feed-filter="\''+tab.filter+'\'"></mf-tab-feed>' +
+                                '<mf-tab-feed tab-id="\''+tab.id+'\'"></mf-tab-feed>' +
                             '</div>';
                         }
                     }
