@@ -10,8 +10,66 @@
                         <li>
                             
                             <div class="form-group">
-                                <label for="newTabName">Tab Name:</label><input id="newTabName" type="text" ng-model="tabManager.newTabData.name" class="form-control" />
-                                <label for="newTabName">Filters:</label><input id="newTabFilters" type="text" ng-model="tabManager.newTabData.filtersStr" class="form-control" />
+                                
+                                <label for="newTabName">Tab Name:</label>
+                                <input id="newTabName" type="text" ng-model="tabManager.newTabData.name" class="form-control" />
+                                
+                                <label for="newTabName">Filters:</label>
+                                <p>To build the filter click one of the buttons below...</p>
+                                <!-- 
+                                    Filter builder:
+                                      - NOT
+                                      - AND
+                                      - OR
+                                      - COLLECTION NAME -> correspond to search item type
+                                      - COLLECTION FIELD -> field on the collection of that type
+                                      - PUBLIC
+                                    We must always suggest the next correct option, eg first options are: NOT, COLLECTION NAME, PUBLIC
+                                
+                                    TODO: 
+                                        - improve layout, 
+                                        - on selecting from dropdowns, update filter value field
+                                        - get add/remove of fields integrated with relevant functions
+                                        - only show button/dropdown/unput when its the right time to do so
+                                -->
+                                
+                                <button class="form-control btn btn-info" ng-if="tabManager.filterVisibility['public']"><span class="glyphicon glyphicon-user"></span> ALL - everything *Default Filter</button>
+                                <br><br>
+                                <button class="form-control btn btn-info" ng-if="tabManager.filterVisibility['not']"><span class="glyphicon glyphicon-remove"></span> NOT - must not contain following term</button>
+                                <button class="form-control btn btn-info" ng-if="tabManager.filterVisibility['and']"><span class="glyphicon glyphicon-plus"></span> AND - must contain following term</button>
+                                <button class="form-control btn btn-info" ng-if="tabManager.filterVisibility['or']"><span class="glyphicon glyphicon-asterisk"></span> OR - can contain following term</button>
+                                <br><br>
+                                <div class="dropdown" ng-if="tabManager.filterVisibility['collection']">
+                                    <button id="filterCollection" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false" class="btn btn-info form-control">
+                                        Search For
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="filterCollection">
+                                        <li>Article</li>
+                                        <li>Feed</li>
+                                        <li>Profile</li>
+                                        <li>Project</li>
+                                        <li>League</li>
+                                        <li>Team</li>
+                                        <li>Video</li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown" ng-if="tabManager.filterVisibility['field']">
+                                    <button id="filterValue" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false" class="btn btn-info form-control">
+                                        Value Must:
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="filterValue">
+                                        <li>Equals</li>
+                                        <li>Contains</li>
+                                    </ul>
+                                </div>
+                                <input id="filterValue" type="text" ng-model="tabManager.newTabData.filterBuilderValue" class="form-control" placeholder="Filter Value"/>
+                                <br><br>
+                                <button class="form-control btn btn-info"><span class="glyphicon glyphicon-minus"></span> Remove last added term</button>
+                                <br><br>
+                                <input id="newTabFilters" type="text" ng-model="tabManager.newTabData.filtersStr" class="form-control" readonly />
+                                
                                 <br>
                                 <button ng-click="tabManager.addTabFilter();" class="form-control btn btn-success btn-full">Create New Tab Filter</button>
                             </div>

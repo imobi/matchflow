@@ -53,10 +53,10 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
             angular.element('#eventManagerDialog').modal('hide');
         };
         $scope.showManagerDialog = function (id) {
-            if (id === 'eventgroups-manager') {
+            if (id === 'eventManager') {
                 $scope.manageEvents.clearEventInput();
                 $scope.manageEvents.setEventGroups($scope.user.profile.eventGroups);
-            } else if (id === 'profile-manager') {
+            } else if (id === 'profileManager') {
 //                $scope.managePlayer = {
 //                    id: 'player_1',
 //                    firstName: 'Firsty',
@@ -66,7 +66,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
 //                        '...1','...2','...3'
 //                    ]
 //                };
-            } else if (id === 'league-manager') {
+            } else if (id === 'leagueManager') {
 //                $scope.manageLeague = {
 //                    leagues: [
 //                        {
@@ -80,7 +80,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
 //                        }
 //                    ]
 //                };
-            } else if (id === 'team-manager') {
+            } else if (id === 'teamManager') {
 //                $scope.manageCategories.categoryToAdd = {
 //                    teams: [
 //                        {

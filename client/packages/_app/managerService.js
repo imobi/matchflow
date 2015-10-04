@@ -87,9 +87,18 @@ angular.module('matchflow').factory('managerService',['$meteor','utilsService','
         teamManager : {},
         getTabFilterManager : function() {
             return {
+                filterVisibility : {
+                    'not' : true,
+                    'and' : true,
+                    'or' : true,
+                    'collection' : true,
+                    'field' : true,
+                    'public' : true
+                },
                 newTabData : {
                     name: '',
-                    filtersStr: '',
+                    filtersStr: 'public',
+                    filterBuilderValue: '',
                     filters: [
                         /* TODO build a filter builder
                          { 

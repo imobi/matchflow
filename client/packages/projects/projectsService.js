@@ -35,8 +35,10 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
                     ];
                     // group > league > team > user
                     var shareGroupMap = {};
-                    for (var s = 0; s < user.shareGroups.length; s++) {
-                        shareGroupMap[user.shareGroups[s]._id] = user.shareGroups[s];
+                    if (user.shareGroups !== undefined) {
+                        for (var s = 0; s < user.shareGroups.length; s++) {
+                            shareGroupMap[user.shareGroups[s]._id] = user.shareGroups[s];
+                        }
                     }
                     // we reduce the permissions into one array
                     for (var p = 0; p < project.permissions.length; p++) {
@@ -68,9 +70,11 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
                         _id
                     );
                     // call the callback, to hide and load the project
-                    callback(_id);
+                    if (callback) {
+                        callback(_id);
+                    }
                     //Generate a password for project and add to video server's white list
-                    Meteor.call('addProjectToVideoServer',_id);
+                    //TODO add this back:: Meteor.call('addProjectToVideoServer',_id); 
                 },function(error){
                     // TODO throw an error without hiding the create project dialog
                     console.log('ProjectService: error project not saved',error);

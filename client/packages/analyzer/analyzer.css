@@ -122,9 +122,14 @@
 
 /* mf tag tree */
 .mf-tag-tree-container {
-    width:300px; 
+    width:100%; 
     padding: 8px 0;
 }
+
+.mf-tag-tree-container > ul > li > a:focus {
+    opacity: 0.5;
+}
+
 
 .mf-tag-tree-container .tree-overflow-content {
     overflow-y: scroll; 
