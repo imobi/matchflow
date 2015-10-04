@@ -258,6 +258,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 // save the project here
                 projectsService.saveProject(
                     $scope.currentProject,
+                    $scope.user,
                     function(_id){
                         $scope.currentProject = projectsService.getProjectByID(_id);
                         // now we can hide and clear things
