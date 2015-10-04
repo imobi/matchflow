@@ -130,7 +130,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         permissionsList[permissionsList.length] = userPermission;
         permissionsMap[userPermission.id] = userPermission;*/
         var publicPermission = {
-            type: 'Public',
+            type: 'public',
             id: 'public'
         };
         permissionsList[permissionsList.length] = publicPermission;

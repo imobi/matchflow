@@ -61,8 +61,13 @@ Meteor.publish('searchdata', function (opts) {
         }
         // direct permission
         orCriteria[orCriteria.length] = {
-            'permissions.type': 'private',
+            'permissions.type': 'user',
             'permissions.id': currentUser._id
+        };
+        // or just public
+        orCriteria[orCriteria.length] = {
+            'permissions.type': 'public',
+            'permissions.id': 'public'
         };
         
         // counts module.. couldn't get it to work: meant to return the full number of entries

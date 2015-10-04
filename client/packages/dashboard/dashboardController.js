@@ -17,7 +17,7 @@ angular.module('matchflow').controller('DashboardCtrl', ['$scope','$meteor','$st
                 'project', // type
                 [ // search entry permissions: who can see this?
                     {
-                        type: 'private',
+                        type: 'user',
                         id: $scope.user._id
                     }
                 ],

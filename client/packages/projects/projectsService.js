@@ -29,8 +29,8 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
                     // ALSO convert any groups into the individual permissions
                     var permissionsArr = [
                         { // Compulsory
-                            type: 'private', // this is specifically for the owner/creator of the project
-                            id: user._id
+                            type: 'user', // this is specifically for the owner/creator of the project
+                            id: project.ownerId
                         }
                     ];
                     // group > league > team > user

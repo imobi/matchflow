@@ -3,7 +3,27 @@ Meteor.publish('projects', function () {
         console.log('Finding user['+this.userId+']\'s projects');
         return Projects.find(
             {
-                users: this.userId
+                $or : [
+                    { // if this project is public
+                        permissions : { 
+                            $elemMatch: { 
+                                type : 'public',
+                                id : 'public'
+                            } 
+                        } 
+                    },
+                    { // if this user is authorized
+                        permissions : { 
+                            $elemMatch: { 
+                                type : 'user',
+                                id : this.userId
+                            } 
+                        } 
+                    },
+                    { // if this user is the owner
+                        owner : this.userId
+                    }
+                ]
             }, 
             {
                 fields: {password:0, videoServerToken:0} //do not publish the password field or token to the front end
