@@ -84,7 +84,7 @@ angular.module('matchflow').directive('mfEventTagLines', function($interval) {
                             var top = 30*group.index;
                             // TODO need a tooltip with the tag name in it
                             // TODO need a mechanism to adjust before, end and position
-                            tagHTML += '<div class="mf-event-tag-indicator" style="top:'+top+'px; left:'+position+'px; width:'+width+'px; margin-left:-'+offset+'px; background-color:'+group.bgColor+';"></div>';
+                            tagHTML += '<div class="mf-event-tag-indicator mf-'+tag.time+'-t mf-'+tag.category+'-c mf-'+tag.name+'-n" style="top:'+top+'px; left:'+position+'px; width:'+width+'px; margin-left:-'+offset+'px; background-color:'+group.bgColor+';"></div>';
                         }
                     }
 					angular.element('#tagContainer').html(tagHTML);

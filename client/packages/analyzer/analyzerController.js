@@ -172,36 +172,81 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 var groupingIndexMap = {};
                 if ($scope.currentProject !== undefined &&
                         $scope.currentProject.tags !== undefined) {
+                    // Grouping Order: category > name > timestamp
                     for (var t = 0; t < $scope.currentProject.tags.length; t++) {
                         var currentTag = $scope.currentProject.tags[t];
+                        // index currently doesnt exist, so create new object
                         if (groupingIndexMap[currentTag.category] === undefined) {
                             // add the category and store its index
-                            groupingIndexMap[currentTag.category] = newGroupedTagsArray.length;
+                            groupingIndexMap[currentTag.category] = { index:newGroupedTagsArray.length };
                             newGroupedTagsArray[newGroupedTagsArray.length] = {
-                                name: currentTag.category,
+                                name: currentTag.category, // group level
+                                selector: '.mf-'+currentTag.category+'-c',
                                 colors: currentTag.colors,
-                                children:[
+                                children:[ // event level
                                     {
                                         name: currentTag.name,
-                                        colors: currentTag.colors
+                                        selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.name+'-n',
+                                        colors: currentTag.colors,
+                                        children: [ // timestamp level
+                                            {
+                                                name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
+                                                selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
+                                                colors: currentTag.colors
+                                            }
+                                        ]
                                     }
                                 ]
                             };
                         } else {
-                            newGroupedTagsArray[
-                                groupingIndexMap[
-                                    currentTag.category
-                                ]
-                            ].children[
+                            // find the index for the child
+                            var children = newGroupedTagsArray[
+                                    groupingIndexMap[
+                                        currentTag.category
+                                    ].index
+                                ].children;
+                            var found = false;
+                            var index = 0;
+                            for (index = 0; index < children.length && !found; index++) {
+                                if (children[index].name === currentTag.name) {
+                                    found = true;
+                                    index--;
+                                }
+                            }
+                            if (found) {
+                                // we found a tag with the same name, so we just add this tags timestamp under it
+                                children[index].children[
+                                    children[index].children.length
+                                ] = {
+                                    name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
+                                    selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
+                                    colors: currentTag.colors
+                                };
+                            } else {
+                                // otherwise its a new tag instance
                                 newGroupedTagsArray[
                                     groupingIndexMap[
                                         currentTag.category
+                                    ].index
+                                ].children[
+                                    newGroupedTagsArray[
+                                        groupingIndexMap[
+                                            currentTag.category
+                                        ].index
+                                    ].children.length
+                                ] = {
+                                    name: currentTag.name,
+                                    selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.name+'-n',
+                                    colors: currentTag.colors,
+                                    children: [ // timestamp level
+                                        {
+                                            name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
+                                            selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
+                                            colors: currentTag.colors
+                                        }
                                     ]
-                                ].children.length
-                            ] = {
-                                name: currentTag.name,
-                                colors: currentTag.colors
-                            };
+                                };
+                            }
                         }
                     }
                 }
