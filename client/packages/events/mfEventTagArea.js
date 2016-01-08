@@ -24,7 +24,7 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
                             contentHTML += '<div class="mf-event-group-title" style="color:'+group.bgColor+';">'+group.name+'</div>';
                             for (var c = 0; c < group.eventList.length; c++) {
                                 var event = group.eventList[c];
-                                contentHTML += '<div class="col-lg-2"><div ng-click="addThisToTagLine('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">'+event.name+'</div></div>';
+                                contentHTML += '<div class="col-lg-2"><div ng-click="addThisToTagLine('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">['+event.before+'] '+event.name+' ['+event.after+']</div></div>';
                             }
                             contentHTML += '</div>';
                         }

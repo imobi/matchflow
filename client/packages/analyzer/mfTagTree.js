@@ -19,6 +19,10 @@ angular.module('matchflow').directive('mfTagTree', function($compile) {
                 scope.unhighlight();
                 angular.element(selector).addClass('mf-highlight');
             };
+            scope.removeTag = function(id) {
+                // use the service to remove this tag
+                
+            };
             scope.$watch(
                 'tagData',
                 function(newTags,oldTags){
@@ -40,7 +44,17 @@ angular.module('matchflow').directive('mfTagTree', function($compile) {
                                 //<li class="divider"></li>
                                 return treeHtml;
                             } else {
-                                return '<li class="lvl-'+lvl+'" style="background-color:'+bgColor+';" ><a href="#" ng-mouseenter="highlight(\''+selectorClass+'\');" ng-mouseleave="unhighlight();" style="color:'+fgColor+';">'+treeElem.name+'</a></li>';
+                                return '<li class="lvl-'+lvl+'" style="background-color:'+bgColor+';" >'+
+                                           '<div style="width:100%; height: 30px; line-height: 30px;">'+
+                                               '<a href="#" ng-mouseenter="highlight(\''+selectorClass+'\');" ng-mouseleave="unhighlight();" style="color:'+fgColor+'; display:inline-block; float:left; margin-left:10px;">'+
+                                                   treeElem.name+
+                                               '</a>'+
+                                               // TODO ADD REMOVE ICON
+                                               '<a ng-click="removeTag(\''+treeElem.name+'\');" style="color:'+fgColor+'; display:inline-block; float:right; margin-right:10px;">'+
+                                                   '<span class="glyphicon glyphicon-trash"></span>'+
+                                               '</a>'+
+                                           '</div>'+
+                                       '</li>';
                             }
                         };
                         element.find('.sg-tree-root').html(

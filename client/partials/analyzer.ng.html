@@ -67,6 +67,9 @@
             <span>
                 <a ng-click="uploadVideo()"><button class="btn btn-success">Upload Video</button></a>
             </span>
+            <span>
+                <a ng-click="videoPlayer.toggleLive()"><button class="btn btn-info">{{ !videoPlayer.showLive ? 'Show Live' : 'Back to Video' }}</button></a>
+            </span>
         </div>
     </div>
     

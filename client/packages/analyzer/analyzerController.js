@@ -39,6 +39,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 searchMeta: [],
                 videoDate: "",
                 videoURL: "",
+                liveStream: false, // NEW 
+                twitchChannel: 'nightblue3', // NEW
                 creationDate: '',
                 leagueSelection: '',
                 eventGroupSelection:[],
@@ -77,6 +79,15 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 timestamp : new Date().getTime(),
                 timerPosition : 0
             },
+            showLive: false,
+            toggleLive : function() {
+                if ($scope.videoPlayer.showLive) {
+                    $scope.videoPlayer.showLive = false;
+                } else {
+                    $scope.videoPlayer.showLive = true;
+                }
+            },
+            channel: 'nightblue3',
             videoPlaybackLength : 60 * 90, // 60 sec x 90 minutes
             status: 'paused',
             PAUSED:'paused',
