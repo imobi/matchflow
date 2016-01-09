@@ -9,8 +9,10 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
         },
         template: '' +
             '<div class="row mf-event-tag-line-container-parent">' +
+                '<div class="mf-time-overview-line clear">' +
+                    '<div class="mf-current-playback-position-bar" style="margin-left:{{ playbackPosition }}%;"><div class="mf-playback-text">{{ currentTime }}</div></div>' +
+                '</div>' +
                 '<div class="mf-time-overview-line" ng-click="slideTo($event)">' +
-                // TODO show the current position on the jumpto% line
                     '<span class="glyphicon glyphicon-arrow-left"></span> click to jump to % time <span class="glyphicon glyphicon-arrow-right"></span>' +
                     '<div class="mf-current-playback-point" style="width:{{ percentComplete }}%;"></div>' +
                 '</div>' +
@@ -40,15 +42,16 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
             scope.groupMap = {};
             scope.mode = 'video'; // or 'livestream'
             scope.percentComplete = 0;
+            scope.playbackPosition = 0;
             scope.zoomLevel = 0;
             scope.zoomPadding = 15;
             scope.slidePosition = 0;
-            // TODO tags must have a unique ID when added to this timeline
+            // tags must have a unique ID when added to this timeline
             scope.currentAddedTagMap = {}; // keeps track of the tags that have been added to the timeline, so we don't end up with duplicates
             // useful timeline info
             // these display differently for each mode
             scope.startTime = 0;
-            scope.currentTime = 0;
+            scope.currentTime = '';
             scope.endTime = 0;
             scope.totalTime = 0;
             
@@ -58,17 +61,18 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                     var tagHTML = '';
                     for (var t = 0; t < scope.tags.length; t++) {
                         var tag = scope.tags[t];
-                        var width = (Number(tag.before) + Number(tag.after)) / 1000 * scope.zoomPadding;
-                        var offset = Number(tag.before) / 1000 * scope.zoomPadding;
-                        var position = tag.time * scope.zoomPadding;
                         var group = scope.groupMap[tag.category];
-                        var top = 30 * group.index; // TODO Why is this throwing an error on initial project load??? 
-                       // TODO need a tooltip with the tag name in it
-                        // TODO need a mechanism to adjust before, end and position
-                        //angular.element('#tagContainer').html(tagHTML);
-                        tag.added = undefined;
-                        scope.currentAddedTagMap[tag.id] = true;
-                        tagHTML += '<div class="mf-event-tag-indicator mf-' + tag.time + '-t mf-' + tag.category + '-c mf-' + tag.name + '-n" style="top:' + top + 'px; left:' + position + 'px; width:' + width + 'px; margin-left:-' + offset + 'px; background-color:' + group.bgColor + ';" mf-tag-width="'+width+'"></div>';
+                        if (group !== undefined) {
+                            var width = (Number(tag.before) + Number(tag.after)) / 1000 * scope.zoomPadding;
+                            var offset = Number(tag.before) / 1000 * scope.zoomPadding;
+                            var position = tag.time * scope.zoomPadding;
+                            var top = 30 * group.index;
+                            // TODO need a tooltip with the tag name in it
+                            // TODO need a mechanism to adjust before, end and position
+                            tag.added = undefined;
+                            scope.currentAddedTagMap[tag.id] = true;
+                            tagHTML += '<div class="mf-event-tag-indicator mf-' + tag.time + '-t mf-' + tag.category + '-c mf-' + tag.name + '-n" style="top:' + top + 'px; left:' + position + 'px; width:' + width + 'px; margin-left:-' + offset + 'px; background-color:' + group.bgColor + ';" mf-tag-width="'+width+'"></div>';
+                        }
                     }
                     angular.element('#tagContainer').html(tagHTML);
                 }
@@ -171,23 +175,31 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                 }
                 scope.percentComplete = x / totalWidth * 100;
             };
+            scope._updatePlaybackPosition = function(x) {
+                var totalWidth = element.outerWidth();
+                if (totalWidth === 0) {
+                    totalWidth = 1;
+                }
+                scope.playbackPosition = x / scope.totalDuration * totalWidth / 10;
+            };
             scope.slideTo = function(e) {
-                // TODO fix this function, and use it each time zoom is used to correct the issues with positioning after zooming in or out, jump to markers
+                // TODO fix this function something isn't quite right in its calculation
+                // use it each time zoom is used to correct the issues with positioning after zooming in or out, jump to markers
                 scope._updatePercentagePosition(e.offsetX);
                 // Now we have the percentage, calculate the jump to the nearest second
                 // we also need to take into account which multiples are being shown
                 var spacing = scope._adjustZoomPadding()/scope._getZoomMultiple();
                 
-                var relativeTime = Math.round(scope.percentComplete*scope.totalDuration/100); // rounded percentage of the total duration
+                var relativeTime = Math.round(scope.percentComplete/100*scope.totalDuration); // rounded percentage of the total duration
                 // need to remove/add offset of the red bars position
-                var paddedPosition = scope.timer.timerPosition * spacing;
-                scope.slidePosition = 0-spacing*relativeTime+paddedPosition;
-                console.log('jumpto: '+scope.percentComplete+'% spacing:'+spacing+' relTime:'+relativeTime+' totDur:'+scope.totalDuration+' zPad:'+scope.zoomPadding+' pPos:'+paddedPosition);
+                scope.slidePosition = spacing*(0-relativeTime+scope.timer.timerPosition);
+                console.log('jumpto: '+scope.percentComplete+'% spacing:'+spacing+' relTime:'+relativeTime+' totDur:'+scope.totalDuration+' zPad:'+scope.zoomPadding+' tPos:'+scope.timer.timerPosition);
             };
             scope.slidePositionReset = function() {
                 // jump back to the position of the red bar 
                 scope.slidePosition = 0;
-                // TODO update % track
+                // update % track
+                scope.percentComplete = scope.playbackPosition;
             };
             scope.$watch('slidePosition',function(newVal,oldVal) {
                 angular.element('.mf-event-tag-line-spacer').css('marginLeft',scope.slidePosition+'px');
@@ -270,6 +282,14 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                         // we need to take into account the scenario where its either 
                         // off to the left or right of the tag timeline, we need to 
                         // max and min limit its position
+                        scope._updatePlaybackPosition(scope.timer.timerPosition);
+                        // TODO format this time
+                        scope.currentTime = scope.timer.timerPosition + '/' + scope.totalDuration + 's';
+                        var spacing = scope._adjustZoomPadding()/scope._getZoomMultiple();
+                        var relativePos = scope.slidePosition/spacing;
+                        // subtract the relative difference between both blue and red lines
+                        scope.percentComplete = scope.playbackPosition-relativePos/scope.totalDuration*100;
+                        //console.log('relativePosition: '+relativePos+' '+(relativePos/scope.totalDuration*100));
                     }
                 },
                 true
@@ -287,12 +307,12 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                             groupToAdd.index = g;
                             scope.groupMap[groupToAdd.name] = groupToAdd;
                         }
+                        // after populating the groups
+                        scope._changeZoom();
                     }
                 },
                 true
             );
-            
-            scope._changeZoom();
             
             /*
              * TODO Refactor the tag adding system here, tags must be added at the current playback spot
