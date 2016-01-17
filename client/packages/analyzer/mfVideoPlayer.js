@@ -1,7 +1,8 @@
 angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
 	return {
 		scope: {
-			playerData : '=videoPlayerData'
+			playerData : '=videoPlayerData',
+            playerMode : '=mode'
 		},
 		// TODO make this player responsive, change video size for screen
 		// we also want nodes, playback touch areas etc
@@ -18,8 +19,19 @@ angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
 			scope.pause = function() {
 				scope.playerData.status = scope.playerData.PAUSED;
 			};
+            if (scope.playerMode === 'livestream') {
+                scope.showLive = true;
+                scope.showPlayer = true;
+            } else if (scope.playerMode === 'headless') {
+                scope.showLive = true;
+                scope.showPlayer = false;
+            } else {
+                // else playerMode = player
+                scope.showLive = false;
+                scope.showPlayer = true;
+            }
 			var contentHTML = ''+
-                '<div ng-show="playerData.showLive">'+
+                '<div ng-show="playerData.showLive && showPlayer">'+
                     '<div id="twitchplayer" class="mf-video-player">'+
 //                        '<iframe src="'+scope.channelURL+'" frameborder="0" scrolling="no" height="400" width="840"></iframe>'+
                         '<button class="btn btn-success">START</button>'+
@@ -35,6 +47,9 @@ angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
                     '<button class="btn btn-success" ng-click="play()">Play</button>'+
                     '<button class="btn btn-info" ng-click="pause()">Pause</button>'+
                     '<button class="btn btn-danger">END</button>'+
+                '</div>'+
+                '<div ng-show="!showPlayer">'+
+                    'Headless Mode'+
                 '</div>';
             /*
              * There are two different modes for this, each needs its own set of controls:

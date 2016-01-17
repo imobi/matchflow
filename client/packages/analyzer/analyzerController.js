@@ -1,5 +1,5 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload', 'modalDialogService',
+    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload,modalDialogService) {
         // standard logout functionality
         $scope.logout = function() {
             $meteor.logout().then(function() {
@@ -397,6 +397,93 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                   }
                 }
             }
+        };
+        
+        // EXPORT DATA FUNCTIOMALITY
+        $scope.dataToExport = '';
+        $scope.dataSections = {
+            generalProjectData : true, // name, dateOfEvent
+            leagueData : true,
+            teamData : true,
+            eventGroupData : true,
+            tagData : true
+        };
+        //Watch for when the export data selection changes
+        $scope.$watch('dataSections', function () {
+            $scope._updateTagData();
+        },true);
+        $scope._updateTagData = function() {
+            // run through all the different segments of data and concat into one
+            // large json object
+            var dataToExp = {};
+            if ($scope.dataSections['generalProjectData']) {
+                dataToExp.projectName = $scope.currentProject.name;
+                dataToExp.dateOfEvent = $scope.currentProject.gameDate;
+            }
+            if ($scope.dataSections['leagueData']) {
+                dataToExp.league = $scope.currentProject.league;
+            }
+            if ($scope.dataSections['teamData']) {
+                dataToExp.teams = [];
+                if ($scope.currentProject.teams) {
+                    for (var i = 0; i < $scope.currentProject.teams.length; i++) {
+                        var team = $scope.currentProject.teams[i];
+                        // add the team data here
+                        dataToExp.teams[i] = {
+                            name: team.name
+                        };
+                    }
+                }
+            }
+            if ($scope.dataSections['eventGroupData']) {
+                dataToExp.eventGroups = [];
+                if ($scope.currentProject.eventGroups) {
+                    for (var i = 0; i < $scope.currentProject.eventGroups.length; i++) {
+                        var eventGroup = $scope.currentProject.eventGroups[i];
+                        // add the team data here
+                        var eventList = [];
+                        if (eventGroup.eventList) {
+                            for (var j = 0; j < eventGroup.eventList.length; j++) {
+                                var eventObj = eventGroup.eventList[j];
+                                eventList[j] = {
+                                    name : eventObj.name,
+                                    before : eventObj.before,
+                                    after : eventObj.after
+                                };
+                            }
+                        }
+                        dataToExp.eventGroups[i] = {
+                            name: eventGroup.name,
+                            events: eventList,
+                            bgColor: eventGroup.bgColor,
+                            txtColor: eventGroup.txtColor
+                        };
+                    }
+                }
+            }
+            if ($scope.dataSections['tagData']) {
+                dataToExp.tags = [];
+                if ($scope.currentProject.tags) {
+                    for (var i = 0; i < $scope.currentProject.tags.length; i++) {
+                        var tag = $scope.currentProject.tags[i];
+                        // add the team data here
+                        dataToExp.tags[i] = {
+                            name: tag.name,
+                            category: tag.category,
+                            time: tag.time,
+                            before: tag.before,
+                            after: tag.after
+                        };
+                    }
+                }
+            }
+            $scope.dataToExport = JSON.stringify(dataToExp);
+        };
+        
+        // open the export project data dialog
+        $scope.exportProjectData = function() {
+            $scope._updateTagData();
+            modalDialogService.open('exportTagData');
         };
     }]
 );

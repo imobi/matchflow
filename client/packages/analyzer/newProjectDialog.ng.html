@@ -1,0 +1,37 @@
+<div class="modal fade" id="newProjectDetails" tabindex="-1" role="dialog" aria-labelledby="newProjectDetailsTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="newProjectDetailsTitle">Enter New Project Details</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Project Name:</span>
+                        <input type="text" ng-model="newProject.name" class="form-control"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">League:</span>
+                        <input type="text" ng-model="newProject.selectedLeague" class="form-control"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Teams:</span>
+                        <input type="text" ng-model="newProject.selectedTeams" class="form-control"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Game Date:</span>
+                        <input type="date" ng-model="newProject.selectedGameDate" class="form-control"/>
+                    </div>
+                    <mf-autocomplete label="'Event Groups:'" search-data="newProject.eventGroupData" ng-model="newProject.selectedEventGroups"></mf-autocomplete>
+                    <!-- TODO allow the user to set the project permissions here, 
+                         this is necessary for the searching functionality  to work-->
+                    <mf-autocomplete label="'Permissions:'" search-field="'type'" key-field="'id'" search-data="newProject.permissionsData" ng-model="newProject.selectedPermissions"></mf-autocomplete>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="goBack('newProjectDetails')">Back</button>
+                <button type="button" class="btn btn-primary" ng-click="createNewProject()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -31,11 +31,10 @@
             </div>
         </div>
     </nav>
-    
-    <!-- LINKUP SIDEBAR <mf-side-bar side-bar-config="sideBarConfiguration"></mf-side-bar>-->
-    
+
     <div class="row">
         <div class="col-lg-12">
+            <!-- Display all project data here, as well as any project function buttons -->
             <span class="info-text-title">
                 Project:
             </span>
@@ -62,17 +61,14 @@
             </span>
             <!-- TODO we should show the projects permissions (who we sharing it with) -->
             <span>
+                <a ng-click="exportProjectData()"><button class="btn btn-primary">Export Data</button></a>
+            </span>
+            <span>
                 <a ng-click="closeCurrentProject()"><button class="btn btn-danger">Close</button></a>
-            </span>
-            <span>
-                <a ng-click="uploadVideo()"><button class="btn btn-success">Upload Video</button></a>
-            </span>
-            <span>
-                <a ng-click="videoPlayer.toggleLive()"><button class="btn btn-info">{{ !videoPlayer.showLive ? 'Show Live' : 'Back to Video' }}</button></a>
             </span>
         </div>
     </div>
-    
+
     <!-- CHARTING EXAMPLE
     <div style="position:fixed; top:100px; right:0px;">
         <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
@@ -82,132 +78,71 @@
             <mf-tag-tree tag-data="groupedTags"></mf-tag-tree>
         </div>
         <div class="col-lg-8">
-            <mf-video-player video-player-data="videoPlayer"></mf-video-player>
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#videos-tab" aria-controls="videos-tab" role="tab" data-toggle="tab">Videos</a></li>
+                <li role="presentation"><a href="#player-tab" aria-controls="player-tab" role="tab" data-toggle="tab">Player</a></li>
+                <li role="presentation"><a href="#livestream-tab" aria-controls="livestream-tab" role="tab" data-toggle="tab">Live Stream</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="videos-tab">
+                    <!-- TODO show list of the uploaded videos here -->
+                    <!-- TODO show video server space info as well -->
+
+                    <div class="panel panel-primary mf-video-list-container">
+                        <div class="panel-heading">
+                            Uploaded Videos:
+                        </div>
+                        <div class="panel-body">
+                            <ol class="list-group">
+                                <li class="list-group-item">Cras justo odio</li>
+                                <li class="list-group-item">Dapibus ac facilisis in</li>
+                                <li class="list-group-item">Morbi leo risus</li>
+                                <li class="list-group-item">Porta ac consectetur ac</li>
+                                <li class="list-group-item">Vestibulum at eros</li>
+                            </ol>
+                        </div>
+                        <div class="panel-footer" style="overflow:auto; clear: both;">
+                            <span style="width:200px; float:left;">
+                                <h5 style="display:inline;">Space Available</h5>
+                                <div class="progress" style="margin-bottom: 0px;">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                        <!-- text for bar goes here -->
+                                        250Mb / 300Mb
+                                    </div>
+                                </div>
+                            </span>
+                            <span style="float:right;">
+                                <a ng-click="uploadVideo()"><button class="btn btn-primary">Upload Video</button></a>
+                            </span>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="player-tab">
+                    <mf-video-player video-player-data="videoPlayer" mode="player"></mf-video-player>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="livestream-tab">
+                    <mf-video-player video-player-data="videoPlayer" mode="livestream"></mf-video-player>
+                </div>
+            </div>
         </div>
         <div class="col-lg-2">
         </div>
     </div>
-    
+
     <mf-event-tag-lines ng-model="videoPlayer.timer" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.tags" play-status="videoPlayer.status"></mf-event-tag-lines>
-    
+
     <mf-event-tag-area event-group-data="currentProject.eventGroups"></mf-event-tag-area>
 
-    <div class="modal fade" id="newProjectDetails" tabindex="-1" role="dialog" aria-labelledby="newProjectDetailsTitle" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="newProjectDetailsTitle">Enter New Project Details</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <span class="input-group-addon">Project Name:</span>
-                            <input type="text" ng-model="newProject.name" class="form-control"/>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">League:</span>
-                            <input type="text" ng-model="newProject.selectedLeague" class="form-control"/>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">Teams:</span>
-                            <input type="text" ng-model="newProject.selectedTeams" class="form-control"/>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">Game Date:</span>
-                            <input type="date" ng-model="newProject.selectedGameDate" class="form-control"/>
-                        </div>
-                        <mf-autocomplete label="'Event Groups:'" search-data="newProject.eventGroupData" ng-model="newProject.selectedEventGroups"></mf-autocomplete>
-                        <!-- TODO allow the user to set the project permissions here, 
-                             this is necessary for the searching functionality  to work-->
-                        <mf-autocomplete label="'Permissions:'" search-field="'type'" key-field="'id'" search-data="newProject.permissionsData" ng-model="newProject.selectedPermissions"></mf-autocomplete>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" ng-click="goBack('newProjectDetails')">Back</button>
-                    <button type="button" class="btn btn-primary" ng-click="createNewProject()">Create</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="existingProject" tabindex="-1" role="dialog" aria-labelledby="existingProjectTitle" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="existingProjectTitle">Choose Existing Project</h4>
-                </div>
-                <div class="modal-body">
-                    <mf-project-selector dialog="'existingProject'"></mf-project-selector>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" ng-click="goBack('existingProject')">Back</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="whatDoYouWantToDo" tabindex="-1" role="dialog" aria-labelledby="whatDoYouWantToDoTitle" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="existingProjectTitle">What do you want to do?</h4>
-                </div>
-                <div class="modal-body">
-                    <a ng-click="showCreateNew();"><button class="btn btn-success btn-full">Create New Project</button></a>
-                    <a ng-click="showChooseExisting();"><button class="btn btn-success btn-full">Find Existing Project</button></a>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" ng-click="goBack('whatDoYouWantToDo',true)">Back To Dashboard</button>
-                    <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- TODO make modal directive that can be used to open and close the modals -->
+    <ng-include src="'client/packages/analyzer/newProjectDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/videoUploadDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/deleteTagConfirmation.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/whatDoYouWantDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/chooseExistingProjectDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/editTagDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/exportTagDataDialog.ng.html'"></ng-include>
+    <ng-include src="'client/packages/analyzer/tagDescriptionDialog.ng.html'"></ng-include>
 
-    <div class="modal fade" id="videoUploadBox" tabindex="-1" role="dialog" aria-labelledby="videoUploadTitle" aria-hidded="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="existingProjectTitle">Upload your video</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4">Video name:</div>
-                        <div class="col-md-8"><input type="text" ng-model="videoName"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div ngf-drop ngf-select ng-model="files" class="drop-box" 
-                                ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="false"
-                                accept="video/*" 
-                                ngf-pattern="'.mp4,.3gp,.mpeg,video/*'">Drop here or click to select file</div>
-                            <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            Files:
-                            <ul>
-                                <li ng-repeat="f in files" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}</li>
-                            </ul>
-                        </div>
-                    </div>
- 
-                    <div class="row">  
-                        <div class="col-md-12">                          
-                            Status:
-                            <pre>{{status}}</pre>
-                            <div class="alert-primary">{{complete}}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" ng-click="goBack('videoUploadBox',true)">Back To Dashboard</button>
-                    <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
 </div>

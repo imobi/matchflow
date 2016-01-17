@@ -1,0 +1,17 @@
+<div class="modal fade" id="whatDoYouWantToDo" tabindex="-1" role="dialog" aria-labelledby="whatDoYouWantToDoTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="existingProjectTitle">What do you want to do?</h4>
+            </div>
+            <div class="modal-body">
+                <a ng-click="showCreateNew();"><button class="btn btn-success btn-full">Create New Project</button></a>
+                <a ng-click="showChooseExisting();"><button class="btn btn-success btn-full">Find Existing Project</button></a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" ng-click="goBack('whatDoYouWantToDo', true)">Back To Dashboard</button>
+                <button type="button" class="btn btn-primary" ng-if="showWDYWTDCancelButton()" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<!-- Login Modal -->
+<div class="modal fade" id="exportTagData" tabindex="-1" role="dialog" aria-labelledby="exportTagDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exportTagDataModalLabel">Export Tag Data</h4>
+            </div>
+            <div class="modal-body">
+                <!-- TODO add checkboxes for each portion of data to export eg. tags, highlights, general data -->
+                <form>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="dataSections['generalProjectData']"> General Project Data
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="dataSections['leagueData']"> League Data
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="dataSections['teamData']"> Team Data
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="dataSections['eventGroupData']"> Event Group Data
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="dataSections['tagData']"> Tag Data
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataExportTextArea">Project Data:</label>
+                        <textarea id="dataExportTextArea" class="form-control" rows="5" readonly>{{ dataToExport }}</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal" tabindex="4">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

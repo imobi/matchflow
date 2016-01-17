@@ -52,16 +52,20 @@
 .mf-video-player {
     background-color:black;
     color: white; 
-    width:840px;
-    height:400px;
+    width:890px;
+    height:420px;
     margin-top:10px; 
 }
 .mf-video-player-container {
-    border: 1px solid #AAA; 
-    border-radius:10px;
     height:480px;
-    padding: 10px;
-    margin: 10px 0px;
+}
+.mf-video-list-container {
+    margin-top: 10px;
+    margin-bottom: 16px; /* Overwrites boostrap panel to stop things jumping around when the tabs change */
+}
+.mf-video-list-container > .panel-body {
+    height:350px;
+    overflow-y: auto;
 }
 
 /* Analyzer */
