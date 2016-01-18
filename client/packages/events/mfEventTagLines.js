@@ -1,7 +1,7 @@
-angular.module('matchflow').directive('mfEventTagLines', function ($interval,$window) {
+angular.module('matchflow').directive('mfEventTagLines', ['$interval','videoPlayerService',function ($interval,videoPlayerService) {
     return {
         scope: {
-            timer: '=ngModel',
+            playerId: '=',
             tags: '=eventTagsToAdd',
             tagLineStatus: '=playStatus',
             totalDuration: '=videoDuration',
@@ -35,12 +35,12 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
         restrict: 'E',
         link: function (scope, element, attr) {
             // important variables:
-            scope.stepper = scope.timer.timestamp / scope.timeModulater;
+            scope.player = videoPlayerService.getPlayer(scope.playerId);
+            scope.stepper = scope.player.timer.timestamp / scope.timeModulater;
             scope.timeModulater = 1000; // move to timer
             scope.timerStep = 1; // move to timer
-            scope.timer.timerPosition = 0;
             scope.groupMap = {};
-            scope.mode = 'video'; // or 'livestream'
+            scope.mode = 'video'; // or 'livestream' get from the player instead
             scope.percentComplete = 0;
             scope.playbackPosition = 0;
             scope.zoomLevel = 0;
@@ -192,8 +192,8 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                 
                 var relativeTime = Math.round(scope.percentComplete/100*scope.totalDuration); // rounded percentage of the total duration
                 // need to remove/add offset of the red bars position
-                scope.slidePosition = spacing*(0-relativeTime+scope.timer.timerPosition);
-                console.log('jumpto: '+scope.percentComplete+'% spacing:'+spacing+' relTime:'+relativeTime+' totDur:'+scope.totalDuration+' zPad:'+scope.zoomPadding+' tPos:'+scope.timer.timerPosition);
+                scope.slidePosition = spacing*(0-relativeTime+scope.player.timer.timerPosition);
+                console.log('jumpto: '+scope.percentComplete+'% spacing:'+spacing+' relTime:'+relativeTime+' totDur:'+scope.totalDuration+' zPad:'+scope.zoomPadding+' tPos:'+scope.player.timer.timerPosition);
             };
             scope.slidePositionReset = function() {
                 // jump back to the position of the red bar 
@@ -215,7 +215,7 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
             */
             // we use interval to control the repetition
             var intervalID = $interval(function () {
-                scope.timer.timestamp = new Date().getTime();
+                scope.player.timer.timestamp = new Date().getTime();
                 // we need to update the position here
                 // TODO fix this for realtime or specified time
                 
@@ -266,14 +266,14 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
             
             scope.$watch(
                 function () {
-                    scope.stepper = Math.trunc(scope.timer.timestamp / scope.timeModulater);
+                    scope.stepper = Math.trunc(scope.player.timer.timestamp / scope.timeModulater);
                     return scope.stepper;
                 },
                 function (newVal, oldVal) {
                     // need to offset against time to allow for pauses
-                    if (scope.timer.timerPosition <= scope.totalDuration * scope.zoomPadding && scope.tagLineStatus === 'playing') {
-                        scope.timer.timerPosition += scope.timerStep;
-                        var paddedPosition = scope.timer.timerPosition * scope.zoomPadding;
+                    if (scope.player.timer.timerPosition <= scope.totalDuration * scope.zoomPadding && scope.tagLineStatus === 'playing') {
+                        scope.player.timer.timerPosition += scope.timerStep;
+                        var paddedPosition = scope.player.timer.timerPosition * scope.zoomPadding;
                         //angular.element('.mf-time-bar.red').css('marginLeft',paddedPosition+'px');
                         angular.element('.mf-event-tag-line-markers').css('marginLeft',(0-paddedPosition)+'px');
                         angular.element('.mf-event-tag-lines').css('marginLeft',(0-paddedPosition)+'px');
@@ -282,9 +282,9 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
                         // we need to take into account the scenario where its either 
                         // off to the left or right of the tag timeline, we need to 
                         // max and min limit its position
-                        scope._updatePlaybackPosition(scope.timer.timerPosition);
+                        scope._updatePlaybackPosition(scope.player.timer.timerPosition);
                         // TODO format this time
-                        scope.currentTime = scope.timer.timerPosition + '/' + scope.totalDuration + 's';
+                        scope.currentTime = scope.player.timer.timerPosition + '/' + scope.totalDuration + 's';
                         var spacing = scope._adjustZoomPadding()/scope._getZoomMultiple();
                         var relativePos = scope.slidePosition/spacing;
                         // subtract the relative difference between both blue and red lines
@@ -347,4 +347,4 @@ angular.module('matchflow').directive('mfEventTagLines', function ($interval,$wi
             );
         }
     };
-});
+}]);

@@ -1,7 +1,9 @@
-angular.module('matchflow').directive('mfEventTagArea', function($compile) {
+angular.module('matchflow').directive('mfEventTagArea', ['$compile','modalDialogService','videoPlayerService',function($compile,modalDialogService,videoPlayerService) {
 	return {
 		scope: {
-			localData : '=eventGroupData'
+			localData : '=eventGroupData',
+            activeDialogKey : '=',
+            playerId: '='
 		},
 		template: '<div class="container-fluid"></div>',
 		replace: true,
@@ -12,7 +14,28 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
 				var tagObj = groupObj.eventList[col];
 				scope.$parent.addTagToTagLine(tagObj,groupObj);
 			};
-			scope.testT = 'what the hell';
+            scope.openDescriptionDialog = function(row,col) {
+                var activeDialogKey = 'tagDesc_'+row+'_'+col;
+                var callbackData = {
+                    'data' : {
+                        'row': row,
+                        'col': col
+                    },
+                    'open':function(){
+                        videoPlayerService.pause(scope.playerId);
+                        scope.activeDialogKey = activeDialogKey;
+                    },
+                    'save':function(){
+                        scope.activeDialogKey = '';
+                        scope.addThisToTagLine(this.data.row,this.data.col);
+                        videoPlayerService.play(scope.playerId);
+                    },
+                    'cancel':function(){
+                        videoPlayerService.play(scope.playerId);
+                    }
+                };
+                modalDialogService.open('tagDescription',activeDialogKey,callbackData);
+            };
 			scope.$watch(
 				'localData',
 				function(newVal,oldVal) {
@@ -24,7 +47,7 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
                             contentHTML += '<div class="mf-event-group-title" style="color:'+group.bgColor+';">'+group.name+'</div>';
                             for (var c = 0; c < group.eventList.length; c++) {
                                 var event = group.eventList[c];
-                                contentHTML += '<div class="col-lg-2"><div ng-click="addThisToTagLine('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">['+event.before+'] '+event.name+' ['+event.after+']</div></div>';
+                                contentHTML += '<div class="col-lg-2"><div ng-click="openDescriptionDialog('+r+','+c+')" class="mf-event-tag" style="background-color:'+group.bgColor+'; color:'+group.txtColor+';">['+event.before+'] '+event.name+' ['+event.after+']</div></div>';
                             }
                             contentHTML += '</div>';
                         }
@@ -35,4 +58,4 @@ angular.module('matchflow').directive('mfEventTagArea', function($compile) {
 			);
 		}            
 	};
-});
+}]);

@@ -120,10 +120,10 @@
 
                 </div>
                 <div role="tabpanel" class="tab-pane" id="player-tab">
-                    <mf-video-player video-player-data="videoPlayer" mode="player"></mf-video-player>
+                    <mf-video-player player-id="'player'"></mf-video-player>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="livestream-tab">
-                    <mf-video-player video-player-data="videoPlayer" mode="livestream"></mf-video-player>
+                    <mf-video-player player-id="'live'"></mf-video-player>
                 </div>
             </div>
         </div>
@@ -131,9 +131,9 @@
         </div>
     </div>
 
-    <mf-event-tag-lines ng-model="videoPlayer.timer" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.tags" play-status="videoPlayer.status"></mf-event-tag-lines>
+    <mf-event-tag-lines player-id="'player'" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.tags" play-status="videoPlayer.status"></mf-event-tag-lines>
 
-    <mf-event-tag-area event-group-data="currentProject.eventGroups"></mf-event-tag-area>
+    <mf-event-tag-area player-id="'player'" event-group-data="currentProject.eventGroups" active-dialog-key="tagDescriptionDialogKey"></mf-event-tag-area>
 
     <!-- TODO make modal directive that can be used to open and close the modals -->
     <ng-include src="'client/packages/analyzer/newProjectDialog.ng.html'"></ng-include>

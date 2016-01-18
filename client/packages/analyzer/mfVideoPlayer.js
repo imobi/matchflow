@@ -1,8 +1,7 @@
-angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
+angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerService',function($compile,videoPlayerService) {
 	return {
 		scope: {
-			playerData : '=videoPlayerData',
-            playerMode : '=mode'
+			playerId : '='
 		},
 		// TODO make this player responsive, change video size for screen
 		// we also want nodes, playback touch areas etc
@@ -12,12 +11,13 @@ angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
 		replace: true,
 		restrict: 'E',
 		link: function(scope, element, attrs) {
+            scope.playerData = videoPlayerService.getPlayer(scope.playerId);
             scope.channelURL = 'http://player.twitch.tv/?channel='+scope.playerData.channel;
 			scope.play = function() {
-				scope.playerData.status = scope.playerData.PLAYING;
+				videoPlayerService.play(scope.playerId);
 			};
 			scope.pause = function() {
-				scope.playerData.status = scope.playerData.PAUSED;
+				videoPlayerService.pause(scope.playerId);
 			};
             if (scope.playerMode === 'livestream') {
                 scope.showLive = true;
@@ -83,4 +83,4 @@ angular.module('matchflow').directive('mfVideoPlayer', function($compile) {
             
 		}            
 	};
-});
+}]);

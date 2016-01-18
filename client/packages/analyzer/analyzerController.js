@@ -1,5 +1,10 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload', 'modalDialogService',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload,modalDialogService) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload', 'modalDialogService', 'videoPlayerService',
+    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload,modalDialogService,videoPlayerService) {
+        // general tag description dialog key and general callback function for dialogs
+        $scope.tagDescriptionDialogKey = '';
+        $scope.fireCallback = function(type) {
+            modalDialogService.executeCallback($scope.tagDescriptionDialogKey,type);
+        };
         // standard logout functionality
         $scope.logout = function() {
             $meteor.logout().then(function() {
@@ -74,27 +79,21 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // VIDEO PLAYER
-        $scope.videoPlayer = {
+        $scope.videoPlayer = videoPlayerService.registerPlayer('player',{
             timer : {
                 timestamp : new Date().getTime(),
                 timerPosition : 0
             },
-            showLive: false,
-            toggleLive : function() {
-                if ($scope.videoPlayer.showLive) {
-                    $scope.videoPlayer.showLive = false;
-                } else {
-                    $scope.videoPlayer.showLive = true;
-                }
-            },
-            channel: 'nightblue3',
+            playerMode: 'video',
             videoPlaybackLength : 60 * 90, // 60 sec x 90 minutes
-            status: 'paused',
-            PAUSED:'paused',
-            PLAYING:'playing',
-            FORWARD:'fastforwarding',
-            REWIND:'rewinding'
-        };
+            status: videoPlayerService.state.PAUSED
+        });
+        $scope.livePlayer = videoPlayerService.registerPlayer('live',{
+            playerMode: 'livestream',
+            streamType : 'twitchtv',
+            channel: 'nightblue3',
+            status: videoPlayerService.state.PLAYING
+        });
         // INPUT FORMS
         // Populate the users event groups map and list
         var userEventGroupMap = {};

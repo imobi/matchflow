@@ -12,12 +12,27 @@ angular.module('matchflow').factory('modalDialogService',function(){
             console.error('Dialog "'+id+'" not found.');
         }
     };
-    return {
-        open : function (id) {
-            performDialogOperation(id,'show');
+    var modalCallbacks = {};
+    var modalService = {
+        executeCallback : function(callbackKey,type) {
+            if (callbackKey && modalCallbacks[callbackKey]) {
+                var closeCallback = modalCallbacks[callbackKey][type];
+                if (closeCallback) {
+                    closeCallback();
+                }
+            }
         },
-        close : function(id) {
+        open : function (id,callbackKey,callbackMapping) {
+            if (callbackKey && callbackMapping) {
+                modalCallbacks[callbackKey] = callbackMapping;
+            }
+            performDialogOperation(id,'show');
+            this.executeCallback(callbackKey,'open');
+        },
+        close : function(id,callbackKey) {
             performDialogOperation(id,'hide');
+            this.executeCallback(callbackKey,'close');
         }
     };
+    return modalService;
 });
