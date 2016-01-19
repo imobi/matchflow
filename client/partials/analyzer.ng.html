@@ -75,7 +75,7 @@
     </div-->
     <div class="row">
         <div class="col-lg-2">
-            <mf-tag-tree tag-data="groupedTags"></mf-tag-tree>
+            <mf-tag-tree tag-data="currentProject.tags" active-dialog-key="activeDialogKey"></mf-tag-tree>
         </div>
         <div class="col-lg-8">
             <ul class="nav nav-tabs">
@@ -133,7 +133,7 @@
 
     <mf-event-tag-lines player-id="'player'" event-groups="currentProject.eventGroups" video-duration="videoPlayer.videoPlaybackLength" event-tags-to-add="currentProject.tags" play-status="videoPlayer.status"></mf-event-tag-lines>
 
-    <mf-event-tag-area player-id="'player'" event-group-data="currentProject.eventGroups" active-dialog-key="tagDescriptionDialogKey"></mf-event-tag-area>
+    <mf-event-tag-area player-id="'player'" event-group-data="currentProject.eventGroups" active-dialog-key="activeDialogKey"></mf-event-tag-area>
 
     <!-- TODO make modal directive that can be used to open and close the modals -->
     <ng-include src="'client/packages/analyzer/newProjectDialog.ng.html'"></ng-include>

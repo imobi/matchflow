@@ -8,10 +8,11 @@
             <div class="modal-body">
                 Are you sure you want to delete the following tag:
                 <!-- TODO show which tag is being deleted here -->
+                {{ activeDialog.getData('name') }}
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" data-dismiss="modal" tabindex="4">Cancel</button>
-                <button class="btn btn-primary" ng-click="confirmTagDelete()" tabindex="3">Delete</button>
+                <button class="btn btn-danger" ng-click="fireCallback('cancel')" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" ng-click="fireCallback('delete')" data-dismiss="modal">Delete</button>
             </div>
         </div>
     </div>

@@ -1,9 +1,14 @@
 angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload', 'modalDialogService', 'videoPlayerService',
     function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload,modalDialogService,videoPlayerService) {
         // general tag description dialog key and general callback function for dialogs
-        $scope.tagDescriptionDialogKey = '';
+        $scope.activeDialogKey = '';
+        $scope.activeDialog = {
+            getData : function(value) {
+                return modalDialogService.data($scope.activeDialogKey)[value];
+            }
+        };
         $scope.fireCallback = function(type) {
-            modalDialogService.executeCallback($scope.tagDescriptionDialogKey,type);
+            modalDialogService.executeCallback($scope.activeDialogKey,type);
         };
         // standard logout functionality
         $scope.logout = function() {
@@ -171,129 +176,33 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             labels : [],
             data : []
         };
-        // Returns the tags grouped by category in arrays
-        $scope.groupedTags = [];
-        $scope.$watch(
-            'currentProject.tags',
-            function(newVal,oldVal){
-                // This watch rebuilds the tag tree after each new tag add
-                // TODO this can be made MUCH more efficient
-                var newGroupedTagsArray = [];
-                var groupingIndexMap = {};
-                if ($scope.currentProject !== undefined &&
-                        $scope.currentProject.tags !== undefined) {
-                    // Grouping Order: category > name > timestamp
-                    for (var t = 0; t < $scope.currentProject.tags.length; t++) {
-                        var currentTag = $scope.currentProject.tags[t];
-                        // index currently doesnt exist, so create new object
-                        if (groupingIndexMap[currentTag.category] === undefined) {
-                            // add the category and store its index
-                            groupingIndexMap[currentTag.category] = { index:newGroupedTagsArray.length };
-                            newGroupedTagsArray[newGroupedTagsArray.length] = {
-                                name: currentTag.category, // group level
-                                selector: '.mf-'+currentTag.category+'-c',
-                                colors: currentTag.colors,
-                                children:[ // event level
-                                    {
-                                        name: currentTag.name,
-                                        selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.name+'-n',
-                                        colors: currentTag.colors,
-                                        children: [ // timestamp level
-                                            {
-                                                name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
-                                                selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
-                                                colors: currentTag.colors
-                                            }
-                                        ]
-                                    }
-                                ]
-                            };
-                        } else {
-                            // find the index for the child
-                            var children = newGroupedTagsArray[
-                                    groupingIndexMap[
-                                        currentTag.category
-                                    ].index
-                                ].children;
-                            var found = false;
-                            var index = 0;
-                            for (index = 0; index < children.length && !found; index++) {
-                                if (children[index].name === currentTag.name) {
-                                    found = true;
-                                    index--;
-                                }
-                            }
-                            if (found) {
-                                // we found a tag with the same name, so we just add this tags timestamp under it
-                                children[index].children[
-                                    children[index].children.length
-                                ] = {
-                                    name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
-                                    selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
-                                    colors: currentTag.colors
-                                };
-                            } else {
-                                // otherwise its a new tag instance
-                                newGroupedTagsArray[
-                                    groupingIndexMap[
-                                        currentTag.category
-                                    ].index
-                                ].children[
-                                    newGroupedTagsArray[
-                                        groupingIndexMap[
-                                            currentTag.category
-                                        ].index
-                                    ].children.length
-                                ] = {
-                                    name: currentTag.name,
-                                    selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.name+'-n',
-                                    colors: currentTag.colors,
-                                    children: [ // timestamp level
-                                        {
-                                            name: currentTag.time+'s',//'[-'+currentTag.before+'ms] '+currentTag.time+'ms [+'+currentTag.after+'ms]',
-                                            selector: '.mf-'+currentTag.category+'-c.mf-'+currentTag.time+'-t',
-                                            colors: currentTag.colors
-                                        }
-                                    ]
-                                };
-                            }
-                        }
-                    }
-                }
-                $scope.groupedTags = newGroupedTagsArray;
-            },
-            true
-        );
-        
+                
         // Tagline functionality
         $scope.addTagToTagLine = function (tagObj,groupObj) {
             var groupName = groupObj.name;
-            // only add if currently playing
-            if ($scope.videoPlayer.status === 'playing') {
-                var l = $scope.currentProject.tags.length;
-                var time = $scope.videoPlayer.timer.timerPosition;
-                // update chart data (event group)
-                if ($scope.eventGroupChart.hasLabel[groupName] === undefined) {
-                    // we can set the colors of the chart here: Chart.defaults.global.colours | Chart.defaults.Doughnut
-                    $scope.eventGroupChart.hasLabel[groupName] = $scope.eventGroupChart.labels.length;
-                    $scope.eventGroupChart.labels[$scope.eventGroupChart.labels.length] = groupName;
-                    $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]] = 1;
-                } else {
-                    $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]]++;
-                }
-                $scope.currentProject.tags[l] = {
-                    id: 'group_'+groupName+'_event_' + l + '_' + time,
-                    time: time,
-                    category: groupName,
-                    name: tagObj.name,
-                    before: tagObj.before,
-                    after: tagObj.after,
-                    colors: {
-                        fg : groupObj.txtColor,
-                        bg : groupObj.bgColor
-                    }
-                };
+            var l = $scope.currentProject.tags.length;
+            var time = $scope.videoPlayer.timer.timerPosition;
+            // update chart data (event group)
+            if ($scope.eventGroupChart.hasLabel[groupName] === undefined) {
+                // we can set the colors of the chart here: Chart.defaults.global.colours | Chart.defaults.Doughnut
+                $scope.eventGroupChart.hasLabel[groupName] = $scope.eventGroupChart.labels.length;
+                $scope.eventGroupChart.labels[$scope.eventGroupChart.labels.length] = groupName;
+                $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]] = 1;
+            } else {
+                $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]]++;
             }
+            $scope.currentProject.tags[l] = {
+                id: 'group_'+groupName+'_event_' + l + '_' + time,
+                time: time,
+                category: groupName,
+                name: tagObj.name,
+                before: tagObj.before,
+                after: tagObj.after,
+                colors: {
+                    fg : groupObj.txtColor,
+                    bg : groupObj.bgColor
+                }
+            };
         };
         // DIALOG FUNCTIONS
         $scope.createNewProject = function() {

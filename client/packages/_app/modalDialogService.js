@@ -16,10 +16,17 @@ angular.module('matchflow').factory('modalDialogService',function(){
     var modalService = {
         executeCallback : function(callbackKey,type) {
             if (callbackKey && modalCallbacks[callbackKey]) {
-                var closeCallback = modalCallbacks[callbackKey][type];
-                if (closeCallback) {
-                    closeCallback();
+                var callback = modalCallbacks[callbackKey][type];
+                if (callback) {
+                    callback(modalCallbacks[callbackKey]['data']);
                 }
+            }
+        },
+        data : function(callbackKey) {
+            if (callbackKey && modalCallbacks[callbackKey]) {
+                return modalCallbacks[callbackKey]['data'];
+            } else {
+                return {};
             }
         },
         open : function (id,callbackKey,callbackMapping) {

@@ -15,26 +15,30 @@ angular.module('matchflow').directive('mfEventTagArea', ['$compile','modalDialog
 				scope.$parent.addTagToTagLine(tagObj,groupObj);
 			};
             scope.openDescriptionDialog = function(row,col) {
-                var activeDialogKey = 'tagDesc_'+row+'_'+col;
-                var callbackData = {
-                    'data' : {
-                        'row': row,
-                        'col': col
-                    },
-                    'open':function(){
-                        videoPlayerService.pause(scope.playerId);
-                        scope.activeDialogKey = activeDialogKey;
-                    },
-                    'save':function(){
-                        scope.activeDialogKey = '';
-                        scope.addThisToTagLine(this.data.row,this.data.col);
-                        videoPlayerService.play(scope.playerId);
-                    },
-                    'cancel':function(){
-                        videoPlayerService.play(scope.playerId);
-                    }
-                };
-                modalDialogService.open('tagDescription',activeDialogKey,callbackData);
+                var player = videoPlayerService.getPlayer(scope.playerId);
+                if (player.status === videoPlayerService.state.PLAYING) {
+                    var activeDialogKey = 'tagDesc_'+row+'_'+col;
+                    var callbackData = {
+                        'data' : {
+                            'row': row,
+                            'col': col
+                        },
+                        'open':function(){
+                            videoPlayerService.pause(scope.playerId);
+                            scope.activeDialogKey = activeDialogKey;
+                        },
+                        'save':function(data){
+                            scope.activeDialogKey = '';
+                            scope.addThisToTagLine(data.row,data.col);
+                            videoPlayerService.play(scope.playerId);
+                        },
+                        'cancel':function(){
+                            scope.activeDialogKey = '';
+                            videoPlayerService.play(scope.playerId);
+                        }
+                    };
+                    modalDialogService.open('tagDescription',activeDialogKey,callbackData);
+                } // TODO else tell user they need to be playing before they can assign a tag
             };
 			scope.$watch(
 				'localData',
