@@ -50,11 +50,12 @@
 
 /* mf-video-player */
 .mf-video-player {
-    background-color:black;
-    color: white; 
-    width:890px;
-    height:420px;
-    margin-top:10px; 
+    width:100%; 
+    height:auto;
+    max-height: 415px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: black;
 }
 .mf-video-player-container {
     height:480px;

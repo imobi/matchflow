@@ -40,6 +40,15 @@ angular.module('matchflow').factory('videoPlayerService',function(){
             } else {
                 console.log('player['+id+'] doesnt exist');
             }
+        },
+        reset : function(id) {
+            if (videoPlayers[id]) {
+                videoPlayers[id].status = 'paused';
+                videoPlayers[id].timer.timestamp = 0;
+                videoPlayers[id].timer.timerPosition = 0;
+            } else {
+                console.log('player['+id+'] doesnt exist');
+            }
         }
     };
     return playerService;

@@ -13,12 +13,24 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
 		link: function(scope, element, attrs) {
             scope.playerData = videoPlayerService.getPlayer(scope.playerId);
             scope.channelURL = 'http://player.twitch.tv/?channel='+scope.playerData.channel;
+            scope.restart = function() {
+				videoPlayerService.reset(scope.playerId);
+                element.find('#'+scope.playerId)[0].load();
+			};
 			scope.play = function() {
 				videoPlayerService.play(scope.playerId);
+                element.find('#'+scope.playerId)[0].play();
 			};
 			scope.pause = function() {
 				videoPlayerService.pause(scope.playerId);
+                element.find('#'+scope.playerId)[0].pause();
 			};
+            scope.isPlaying = function() {
+                return scope.playerData.status === videoPlayerService.state.PLAYING;
+            };
+            scope.isPaused = function() {
+                return scope.playerData.status === videoPlayerService.state.PAUSED;
+            };
             if (scope.playerMode === 'livestream') {
                 scope.showLive = true;
                 scope.showPlayer = true;
@@ -39,14 +51,14 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
                     '</div>'+
                 '</div>'+
                 '<div ng-show="!playerData.showLive">'+
-                    '<div id="videoPlayerTimestamp" class="mf-video-player"></div>'+
-//                    '<video width="320" height="240" controls style="position:absolute; top:0px; left:0px;">'+
-//                        '<source src="http://127.0.0.1:8085/stream.mp4" type="video/mp4">'+
-//                    '</video>'+
-                    '<button class="btn btn-danger">START</button>'+
-                    '<button class="btn btn-success" ng-click="play()">Play</button>'+
-                    '<button class="btn btn-info" ng-click="pause()">Pause</button>'+
-                    '<button class="btn btn-danger">END</button>'+
+//                    '<div id="videoPlayerTimestamp" class="mf-video-player"></div>'+
+                    '<video id="'+scope.playerId+'" class="mf-video-player">'+
+                        '<source src="'+scope.playerData.url+'" type="video/mp4">'+
+                    '</video>'+
+                    '<button class="btn btn-danger" ng-click="restart()"><span class="glyphicon glyphicon-step-backward"></span></button>'+
+                    '<button class="btn btn-success" ng-click="play()" ng-show="isPaused()"><span class="glyphicon glyphicon-play"></span></button>'+
+                    '<button class="btn btn-info" ng-click="pause()" ng-show="isPlaying()"><span class="glyphicon glyphicon-pause"></span></button>'+
+                    '<button class="btn btn-danger"><span class="glyphicon glyphicon-step-forward"></span></button>'+
                 '</div>'+
                 '<div ng-show="!showPlayer">'+
                     'Headless Mode'+
@@ -73,13 +85,13 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
              *    tags can only be added at the current time in this mode
              */
 			element.find('#videoPlayerHolder').html($compile(contentHTML)(scope));
-			scope.$watch(
-				'playerData.timer.timestamp',
-				function() {
-					element.find('#videoPlayerTimestamp').html(scope.playerData.timer.timestamp+'['+scope.playerData.status+']');
-				},
-				true
-			);
+//			scope.$watch(
+//				'playerData.timer.timestamp',
+//				function() {
+//					element.find('#videoPlayerTimestamp').html(scope.playerData.timer.timestamp+'['+scope.playerData.status+']');
+//				},
+//				true
+//			);
             
 		}            
 	};

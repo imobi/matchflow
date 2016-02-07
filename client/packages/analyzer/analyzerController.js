@@ -91,7 +91,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             },
             playerMode: 'video',
             videoPlaybackLength : 60 * 90, // 60 sec x 90 minutes
-            status: videoPlayerService.state.PAUSED
+            status: videoPlayerService.state.PAUSED,
+            url: "http://127.0.0.1:3005/cfs/files/video/3o5nZTgdtjFyjuBGz/Waterscape_2.mp4"
         });
         $scope.livePlayer = videoPlayerService.registerPlayer('live',{
             playerMode: 'livestream',
@@ -393,5 +394,17 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             $scope._updateTagData();
             modalDialogService.open('exportTagData');
         };
+        
+        /* 
+         * ==== TODO ====
+         * - Load the projects video data from our video server via API or TDD
+         * - Integrate the video controls into our player service
+         * - Adjust video sequence in the list
+         * - Must play through the list of videos in sequence
+         * - Space must be limited
+         * - Authenticate by granting each project its own storage space.
+         * 
+         */
+        
     }]
 );
