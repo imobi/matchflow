@@ -1,29 +1,30 @@
 angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerService',function($compile,videoPlayerService) {
 	return {
 		scope: {
-			playerId : '='
+			playerId : '=',
+            playerData : '='
 		},
 		// TODO make this player responsive, change video size for screen
 		// we also want nodes, playback touch areas etc
-		template: '<div class="row mf-video-player-container">'+
+		template: '<div id="{{ playerId }}" class="row mf-video-player-container">'+
 					  '<div id="videoPlayerHolder" class="col-lg-12"></div>'+
 				  '</div>',
 		replace: true,
 		restrict: 'E',
 		link: function(scope, element, attrs) {
-            scope.playerData = videoPlayerService.getPlayer(scope.playerId);
+            // TODO maybe move this into a service
             scope.channelURL = 'http://player.twitch.tv/?channel='+scope.playerData.channel;
             scope.restart = function() {
 				videoPlayerService.reset(scope.playerId);
-                element.find('#'+scope.playerId)[0].load();
+                element.find('#'+scope.playerId+'_'+scope.currentVideoPlaybackIndex)[0].load();
 			};
 			scope.play = function() {
 				videoPlayerService.play(scope.playerId);
-                element.find('#'+scope.playerId)[0].play();
+                element.find('#'+scope.playerId+'_'+scope.currentVideoPlaybackIndex)[0].play();
 			};
 			scope.pause = function() {
 				videoPlayerService.pause(scope.playerId);
-                element.find('#'+scope.playerId)[0].pause();
+                element.find('#'+scope.playerId+'_'+scope.currentVideoPlaybackIndex)[0].pause();
 			};
             scope.isPlaying = function() {
                 return scope.playerData.status === videoPlayerService.state.PLAYING;
@@ -31,10 +32,10 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
             scope.isPaused = function() {
                 return scope.playerData.status === videoPlayerService.state.PAUSED;
             };
-            if (scope.playerMode === 'livestream') {
+            if (scope.playerData.playerMode === 'livestream') {
                 scope.showLive = true;
                 scope.showPlayer = true;
-            } else if (scope.playerMode === 'headless') {
+            } else if (scope.playerData.playerMode === 'headless') {
                 scope.showLive = true;
                 scope.showPlayer = false;
             } else {
@@ -42,6 +43,54 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
                 scope.showLive = false;
                 scope.showPlayer = true;
             }
+            
+            // TODO run through all video names and get their relative URL's recursively
+            var key = '1'; // authentication key
+            // important player control metadata
+            scope.videoSwitchingArray = [];
+            scope.totalPlaybackLength = 0;
+            scope.currentVideoPlaybackIndex = 0;
+            var loadVideos = function(videos,index) {
+                if (index < videos.length) {
+                    var video = scope.playerData.videos[index];
+                    Meteor.call('getVideoURL', video.id, video.name, key, function (err, res) {
+                        if (res !== undefined && res !== null) {
+                            console.log('video url aquired: '+res.url);
+                            // we hide each player initially, the loader is always shown in the background
+                            // the video player shows when its ready, and only one is shown at a time
+                            // this directive will manage the position and switching between the different videos
+                            // must be as seamless as possible until the backend is developed to the point where
+                            // it can handle streaming properly
+                            var videoPlayerId = scope.playerId+'_'+index;
+                            // last player must be at the top of the pile, but we show the index 0 video first
+                            var displayIfFirst = index === 0 ? ' mf-show-player' : '';
+                            var videoPlayerHtml = '<video id="'+videoPlayerId+'" class="mf-video-player'+displayIfFirst+'" style="display:none; z-index:100'+index+';">'+
+                                    '<source src="'+res.url+'" type="video/mp4">'+
+                                '</video>';
+                            element.find('.mf-video-container').append(videoPlayerHtml);
+                            var vid = element.find('#'+videoPlayerId)[0];
+                            // TODO get the length of the videos and sum them up, this forms the total playback length
+                            // we must store this point as well in a map so we know when to switch
+                            // we must now use this and the project counter to determine when to switch
+                            if (vid !== undefined) {
+                                var playbackLength = vid.duration;
+                                scope.videoSwitchingArray[scope.videoSwitchingArray.length]=scope.totalPlaybackLength;
+                                scope.totalPlaybackLength += playbackLength;
+                            } else {
+                                console.log('video player - no duration found');
+                            }
+                        } else {
+                            console.log('unable to get the video url');
+                        }
+                        loadVideos(videos,index+1);
+                    });
+                }
+                return;
+            };
+                            
+            // TODO show a video loader screen, and then append the video once its ready
+            // TODO incrementally add more video players, and manage the seamless switching between them
+            
 			var contentHTML = ''+
                 '<div ng-show="playerData.showLive && showPlayer">'+
                     '<div id="twitchplayer" class="mf-video-player">'+
@@ -51,10 +100,10 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
                     '</div>'+
                 '</div>'+
                 '<div ng-show="!playerData.showLive">'+
-//                    '<div id="videoPlayerTimestamp" class="mf-video-player"></div>'+
-                    '<video id="'+scope.playerId+'" class="mf-video-player">'+
-                        '<source src="'+scope.playerData.url+'" type="video/mp4">'+
-                    '</video>'+
+                    '<div class="mf-video-container">'+
+                        '<img src="img/video-loader.gif" alt="video loading animation" class="mf-video-loading-gif" />'+
+                        '<div class="mf-no-videos"><span class="glyphicon glyphicon-remove"></span> No Videos To Load</div>'+
+                    '</div>'+
                     '<button class="btn btn-danger" ng-click="restart()"><span class="glyphicon glyphicon-step-backward"></span></button>'+
                     '<button class="btn btn-success" ng-click="play()" ng-show="isPaused()"><span class="glyphicon glyphicon-play"></span></button>'+
                     '<button class="btn btn-info" ng-click="pause()" ng-show="isPlaying()"><span class="glyphicon glyphicon-pause"></span></button>'+
@@ -85,13 +134,57 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
              *    tags can only be added at the current time in this mode
              */
 			element.find('#videoPlayerHolder').html($compile(contentHTML)(scope));
-//			scope.$watch(
-//				'playerData.timer.timestamp',
-//				function() {
-//					element.find('#videoPlayerTimestamp').html(scope.playerData.timer.timestamp+'['+scope.playerData.status+']');
-//				},
-//				true
-//			);
+            // Load videos after the basic interface is setup, the player will manage what is shown
+            // also only watch if this video player is in player mode
+            if (scope.playerData.playerMode === 'video') {
+                scope.$watch(
+                    'playerData.videos',
+                    function(videos) {
+                        if (videos !== undefined && videos.length > 0) {
+                            element.find('.mf-no-videos').css('display','none');
+                            element.find('.mf-video-loading-gif').css('display','block');
+                            loadVideos(scope.playerData.videos,0);
+                        } else {
+                            element.find('.mf-no-videos').css('display','block');
+                            element.find('.mf-video-loading-gif').css('display','none');
+                        }
+                    }, 
+                    true
+                );
+                scope.$watch(
+                    'playerData.timer.timestamp',
+                    function(newTimestamp) {
+                        // do a range check to find out where the new timestamp is
+                        // check if the right video is playing and move on
+                        var index = 0;
+                        var previousTimestamp = 0;
+                        for (var i = 0, found = false; !found && i < scope.videoSwitchingArray.length; i++) {
+                            var timestampToCheck = scope.videoSwitchingArray;
+                            if (newTimestamp >= previousTimestamp && newTimestamp < timestampToCheck) {
+                                index = i;
+                                found = true;
+                            } else {
+                                previousTimestamp = timestampToCheck;
+                            }
+                        }
+                        
+                        if (index !== undefined) {
+                            var newPlayer = element.find('#'+scope.playerId+'_'+index);
+                            if (!newPlayer.css('display') === 'block') { // if its not showing, wrong player is visible, time to switch
+                                // quick show the new player and start playing
+                                var oldPlayer = element.find('.mf-show-player');
+                                newPlayer.addClass('mf-show-player');
+                                newPlayer[0].play(); // start playing
+                                // and hide the previous
+                                oldPlayer[0].pause(); // pause playing on old player, just a formalit                     y
+                                oldPlayer.removeClass('mf-show-player');
+                                
+                            }
+                        }
+                    },
+                    true
+                );
+            }
             
 		}            
 	};

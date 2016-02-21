@@ -1,46 +1,46 @@
-angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$state','$stateParams','$compile','$http','$timeout','$interval','userService','projectsService','managerService','utilsService', 'Upload', 'modalDialogService', 'videoPlayerService',
-    function ($scope,$meteor,$state,$stateParams,$compile,$http,$timeout,$interval,userService,projectsService,managerService,utilsService,Upload,modalDialogService,videoPlayerService) {
+angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$state', '$stateParams', '$compile', '$http', '$timeout', '$interval', 'userService', 'projectsService', 'managerService', 'utilsService', 'Upload', 'modalDialogService', 'videoPlayerService',
+    function ($scope, $meteor, $state, $stateParams, $compile, $http, $timeout, $interval, userService, projectsService, managerService, utilsService, Upload, modalDialogService, videoPlayerService) {
         // general tag description dialog key and general callback function for dialogs
         $scope.activeDialogKey = '';
         $scope.activeDialog = {
-            getData : function(value) {
+            getData: function (value) {
                 return modalDialogService.data($scope.activeDialogKey)[value];
             }
         };
-        $scope.fireCallback = function(type) {
-            modalDialogService.executeCallback($scope.activeDialogKey,type);
+        $scope.fireCallback = function (type) {
+            modalDialogService.executeCallback($scope.activeDialogKey, type);
         };
         // standard logout functionality
-        $scope.logout = function() {
-            $meteor.logout().then(function() {
+        $scope.logout = function () {
+            $meteor.logout().then(function () {
                 $state.go('home');
-                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
-            },function(err) {
+                angular.element('html, body').animate({scrollTop: 0}, 'fast');
+            }, function (err) {
                 $state.go('home');
-                angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
+                angular.element('html, body').animate({scrollTop: 0}, 'fast');
                 console.log('Error trying to logout');
             });
         };
         // Loading the user collection onto the scope
         $scope.user = userService.getCurrentUserData();
-        
+
         // Loading the project collection onto the scope
         $scope.projects = projectsService.getProjectsData();
 
         // close the currently open project
-        $scope.closeCurrentProject = function() {
+        $scope.closeCurrentProject = function () {
             // show choose dialog again
             $scope.goBack();
         };
-        
+
         // used to decide when to show the cancel button in the WDYWTD dialog
         // requires the current project variable to be accurate
-        $scope.showWDYWTDCancelButton = function() {
+        $scope.showWDYWTDCancelButton = function () {
             return projectsService._currentProject !== undefined && projectsService._currentProject !== 'choose' && projectsService._currentProject !== 'new';
         };
-        
+
         /**************************************/
-        $scope.showCreateNew = function() {
+        $scope.showCreateNew = function () {
             angular.element('#whatDoYouWantToDo').modal('hide');
             $scope.currentProject = {
                 name: '',
@@ -53,8 +53,8 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 twitchChannel: 'nightblue3', // NEW
                 creationDate: '',
                 leagueSelection: '',
-                eventGroupSelection:[],
-                teamSelection:[],
+                eventGroupSelection: [],
+                teamSelection: [],
                 eventGroups: [],
                 tags: [],
                 password: "",
@@ -70,33 +70,33 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         } else if (projectID !== 'new' && projectID !== 'choose') { // if there is one, load that project
             //Binds current project object from Projects meteor collection
             $scope.currentProject = projectsService.getProjectByID(projectID);
-            console.log('setting current project here: '+projectID);
+            console.log('setting current project here: ' + projectID);
             projectsService._currentProject = projectID;
         } else {
             // choose
             angular.element('#whatDoYouWantToDo').modal('show');
         }
-        
-        $scope.showChooseExisting = function() {
+
+        $scope.showChooseExisting = function () {
             angular.element('#whatDoYouWantToDo').modal('hide');
             angular.element('#existingProject').modal('show');
         };
         $scope.manageEvents = managerService.getEventsManager();
         /*************************************/
         // VIDEO PLAYER
-        $scope.videoPlayer = videoPlayerService.registerPlayer('player',{
-            timer : {
-                timestamp : new Date().getTime(),
-                timerPosition : 0
+        $scope.videoPlayer = videoPlayerService.registerPlayer('player', {
+            timer: {
+                timestamp: new Date().getTime(),
+                timerPosition: 0
             },
             playerMode: 'video',
-            videoPlaybackLength : 60 * 90, // 60 sec x 90 minutes
+            videoPlaybackLength: 60 * 90, // 60 sec x 90 minutes
             status: videoPlayerService.state.PAUSED,
-            url: "http://127.0.0.1:3005/cfs/files/video/3o5nZTgdtjFyjuBGz/Waterscape_2.mp4"
+            videos: []
         });
-        $scope.livePlayer = videoPlayerService.registerPlayer('live',{
+        $scope.livePlayer = videoPlayerService.registerPlayer('live', {
             playerMode: 'livestream',
-            streamType : 'twitchtv',
+            streamType: 'twitchtv',
             channel: 'nightblue3',
             status: videoPlayerService.state.PLAYING
         });
@@ -111,26 +111,26 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         }
         // Populate the permissions map and list
         /*
-        * Permissions Array:
-        * array of objects { 
-        *   type[
-        *      public (anyone),
-        *      league (all teams in league),
-        *      team (all profiles in team),
-        *      user (specific user),
-        *      private (owner only)
-        *   ], 
-        *   id[
-        *      string (the specific id of the type, empty string if public)
-        *   ]
-        * }
-        */
+         * Permissions Array:
+         * array of objects { 
+         *   type[
+         *      public (anyone),
+         *      league (all teams in league),
+         *      team (all profiles in team),
+         *      user (specific user),
+         *      private (owner only)
+         *   ], 
+         *   id[
+         *      string (the specific id of the type, empty string if public)
+         *   ]
+         * }
+         */
         var permissionsMap = {};
         var permissionsList = [];
         // first add all share groups
         for (var s = 0; s < $scope.user.profile.shareGroups.length; s++) {
             var group = $scope.user.profile.shareGroups[s];
-            var permissionItem = { // these get expanded out on saving to other items such as a searchEntry creation
+            var permissionItem = {// these get expanded out on saving to other items such as a searchEntry creation
                 type: 'group',
                 group: group,
                 id: group.id
@@ -140,11 +140,11 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         }
         // add a permission entry for the user himself, this has to be compulsory so no need to have this here
         /*var userPermission = {
-            type: 'Private',
-            id: $scope.user._id // ID of the current user
-        };
-        permissionsList[permissionsList.length] = userPermission;
-        permissionsMap[userPermission.id] = userPermission;*/
+         type: 'Private',
+         id: $scope.user._id // ID of the current user
+         };
+         permissionsList[permissionsList.length] = userPermission;
+         permissionsMap[userPermission.id] = userPermission;*/
         var publicPermission = {
             type: 'public',
             id: 'public'
@@ -152,34 +152,34 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         permissionsList[permissionsList.length] = publicPermission;
         permissionsMap[publicPermission.id] = publicPermission;
         // TODO now add all leagues, and teams this user has access to so they can add them specifically as a permission
-        
+
         $scope.newProject = {
             name: '',
             selectedTeams: '',
             selectedLeague: '',
-            selectedEventGroups: [],// we save an array of references
-            selectedPermissions: [],// we save an array of references
+            selectedEventGroups: [], // we save an array of references
+            selectedPermissions: [], // we save an array of references
             selectedGameDate: new Date(),
             // INHERITED DATA
             // we pull through important references for the create project dialog
-            eventGroupData : {
-                groupList : userEventGroupsList,
-                groupMap : userEventGroupMap
+            eventGroupData: {
+                groupList: userEventGroupsList,
+                groupMap: userEventGroupMap
             },
-            permissionsData : {
-                groupList : permissionsList,
-                groupMap : permissionsMap
+            permissionsData: {
+                groupList: permissionsList,
+                groupMap: permissionsMap
             }
         };
         // CHART DATA
         $scope.eventGroupChart = {
-            hasLabel : {},
-            labels : [],
-            data : []
+            hasLabel: {},
+            labels: [],
+            data: []
         };
-                
+
         // Tagline functionality
-        $scope.addTagToTagLine = function (tagObj,groupObj) {
+        $scope.addTagToTagLine = function (tagObj, groupObj) {
             var groupName = groupObj.name;
             var l = $scope.currentProject.tags.length;
             var time = $scope.videoPlayer.timer.timerPosition;
@@ -193,20 +193,20 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 $scope.eventGroupChart.data[$scope.eventGroupChart.hasLabel[groupName]]++;
             }
             $scope.currentProject.tags[l] = {
-                id: 'group_'+groupName+'_event_' + l + '_' + time,
+                id: 'group_' + groupName + '_event_' + l + '_' + time,
                 time: time,
                 category: groupName,
                 name: tagObj.name,
                 before: tagObj.before,
                 after: tagObj.after,
                 colors: {
-                    fg : groupObj.txtColor,
-                    bg : groupObj.bgColor
+                    fg: groupObj.txtColor,
+                    bg: groupObj.bgColor
                 }
             };
         };
         // DIALOG FUNCTIONS
-        $scope.createNewProject = function() {
+        $scope.createNewProject = function () {
             if ($scope.newProject.name && $scope.newProject.name.length > 0 &&
                     $scope.newProject.selectedTeams !== undefined && $scope.newProject.selectedTeams.length > 0 &&
                     $scope.newProject.selectedLeague !== undefined && $scope.newProject.selectedLeague.length > 0 &&
@@ -222,45 +222,45 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                 $scope.currentProject.permissions = $scope.newProject.selectedPermissions;
                 // save the project here
                 projectsService.saveProject(
-                    $scope.currentProject,
-                    $scope.user,
-                    function(_id){
-                        $scope.currentProject = projectsService.getProjectByID(_id);
-                        // now we can hide and clear things
-                        angular.element('#newProjectDetails').modal('hide');
-                        $scope.newProject = {
-                            name: '',
-                            selectedTeams: '',
-                            selectedLeague: '',
-                            selectedEventGroups: [],// we save an array of references
-                            selectedPermissions: [],// we save an array of references
-                            selectedGameDate: '',
-                            // INHERITED DATA
-                            // we pull through important references for the create project dialog
-                            eventGroupData : {
-                                groupList : userEventGroupsList,
-                                groupMap : userEventGroupMap
-                            },
-                            permissionsData : {
-                                groupList : permissionsList,
-                                groupMap : permissionsMap
-                            }
-                        };
-                    }
+                        $scope.currentProject,
+                        $scope.user,
+                        function (_id) {
+                            $scope.currentProject = projectsService.getProjectByID(_id);
+                            // now we can hide and clear things
+                            angular.element('#newProjectDetails').modal('hide');
+                            $scope.newProject = {
+                                name: '',
+                                selectedTeams: '',
+                                selectedLeague: '',
+                                selectedEventGroups: [], // we save an array of references
+                                selectedPermissions: [], // we save an array of references
+                                selectedGameDate: '',
+                                // INHERITED DATA
+                                // we pull through important references for the create project dialog
+                                eventGroupData: {
+                                    groupList: userEventGroupsList,
+                                    groupMap: userEventGroupMap
+                                },
+                                permissionsData: {
+                                    groupList: permissionsList,
+                                    groupMap: permissionsMap
+                                }
+                            };
+                        }
                 );
             } else {
                 // TODO form field validation
             }
         };
-        $scope.goBack = function(dialogId,allTheWay) {
-            angular.element('#'+dialogId).modal('hide');
+        $scope.goBack = function (dialogId, allTheWay) {
+            angular.element('#' + dialogId).modal('hide');
             if (allTheWay) {
                 // reset the identifier
                 projectsService._currentProject = undefined;
-                $timeout(function() {
+                $timeout(function () {
                     $state.go('dashboard');
-                    angular.element('html, body').animate({ scrollTop: 0 }, 'fast');
-                },300);
+                    angular.element('html, body').animate({scrollTop: 0}, 'fast');
+                }, 300);
             } else {
                 angular.element('#whatDoYouWantToDo').modal('show');
             }
@@ -272,9 +272,9 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         };
 
         //Watch for when a file is dropped or selected
-        $scope.$watch('files', function (oldVal,newVal) {
-            console.log('Files being watched has changed',oldVal,newVal);
-            $scope.upload($scope.files);
+        $scope.$watch('files', function (oldVal, newVal) {
+//            console.log('Files being watched has changed', oldVal, newVal);
+//            $scope.upload($scope.files);
         });
 
         //Log files as they are uploaded
@@ -284,44 +284,44 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
         $scope.upload = function (files) {
             console.log("File upload starting...");
             if (files && files.length) {
-                console.log("Inside if",files);
+                console.log("Inside if", files);
                 for (var i = 0; i < files.length; i++) {
-                  var file = files[i];
-                  if (!file.$error) {
-                    Upload.upload({
-                        url: videoServer+"/upload",
-                        fields: {
-                            'video_name': $scope.videoName
-                        },
-                        file: file
-                    }).progress(function (evt) {
-                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);                        
-                        $scope.status = 'Progress: ' + progressPercentage + '% ' +
+                    var file = files[i];
+                    if (!file.$error) {
+                        Upload.upload({
+                            url: videoServer + "/upload",
+                            fields: {
+                                'video_name': $scope.videoName
+                            },
+                            file: file
+                        }).progress(function (evt) {
+                            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                            $scope.status = 'Progress: ' + progressPercentage + '% ' +
                                     evt.config.file.name + '\n';
-                    }).success(function (data, status, headers, config) {
-                        $timeout(function() {
-                            $scope.complete = 'Original file:' + config.file.name + ', Result: ' + JSON.stringify(data) + '\n';
+                        }).success(function (data, status, headers, config) {
+                            $timeout(function () {
+                                $scope.complete = 'Original file:' + config.file.name + ', Result: ' + JSON.stringify(data) + '\n';
+                            });
                         });
-                    });
-                  }
+                    }
                 }
             }
         };
-        
+
         // EXPORT DATA FUNCTIOMALITY
         $scope.dataToExport = '';
         $scope.dataSections = {
-            generalProjectData : true, // name, dateOfEvent
-            leagueData : true,
-            teamData : true,
-            eventGroupData : true,
-            tagData : true
+            generalProjectData: true, // name, dateOfEvent
+            leagueData: true,
+            teamData: true,
+            eventGroupData: true,
+            tagData: true
         };
         //Watch for when the export data selection changes
         $scope.$watch('dataSections', function () {
             $scope._updateTagData();
-        },true);
-        $scope._updateTagData = function() {
+        }, true);
+        $scope._updateTagData = function () {
             // run through all the different segments of data and concat into one
             // large json object
             var dataToExp = {};
@@ -355,9 +355,9 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
                             for (var j = 0; j < eventGroup.eventList.length; j++) {
                                 var eventObj = eventGroup.eventList[j];
                                 eventList[j] = {
-                                    name : eventObj.name,
-                                    before : eventObj.before,
-                                    after : eventObj.after
+                                    name: eventObj.name,
+                                    before: eventObj.before,
+                                    after: eventObj.after
                                 };
                             }
                         }
@@ -388,13 +388,13 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
             }
             $scope.dataToExport = JSON.stringify(dataToExp);
         };
-        
+
         // open the export project data dialog
-        $scope.exportProjectData = function() {
+        $scope.exportProjectData = function () {
             $scope._updateTagData();
             modalDialogService.open('exportTagData');
         };
-        
+
         /* 
          * ==== TODO ====
          * - Load the projects video data from our video server via API or TDD
@@ -405,6 +405,84 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope','$meteor','$sta
          * - Authenticate by granting each project its own storage space.
          * 
          */
-        
+        $scope.translateSize = function(sizeInBytes) {
+            // TODO improve the way this displays, detect what size makes the most sense to convert to
+            // KB, MB, GB, TB
+            var toKb = Math.ceil(sizeInBytes / 1024 * 10) / 10;
+            if (toKb > 1024) {
+                var toMb = Math.ceil(toKb / 1024 * 10) / 10;
+                if (toMb > 1024) {
+                    var toGb = Math.ceil(toMb / 1024 * 10) / 10;
+                    if (toGb > 1024) {
+                        var toTb = Math.ceil(toGb / 1024 * 10) / 10;
+                        return toTb+'Tb';
+                    } else {
+                        return toGb+'Gb';
+                    }
+                } else {
+                    return toMb+'Mb';
+                }
+            } else {
+                return toKb+'Kb';
+            }
+        };
+        var MAX_SPACE_IN_BYTES = 500*1024*1024;
+        $scope.videoRepo = {
+            totalSpace: $scope.translateSize(MAX_SPACE_IN_BYTES), // TODO improve this representation
+            usedSpace: $scope.translateSize(0),
+            percFull : 0,
+            sessionKey: '00000'
+        };
+        $scope.updateVideoList = function() {
+            Meteor.call('getProjectVideoList', $scope.videoRepo.sessionKey, function (err, res) {
+                if (res !== undefined && res !== null) {
+                    var videoArr = res['cfs.videos.filerecord'];
+                    $scope.videoPlayer.videos = [];
+                    if (videoArr !== undefined && videoArr !== null && videoArr.length > 0) {
+                        // TODO we need to store order of playback as well and also disabled/enabled
+                        // this is because the actual playback must occur from multiple video sources and appear to just be one
+                        var usedSizeInBytes = 0;
+                        for (var i = 0; i < videoArr.length; i++) { 
+                            var vid = videoArr[i].original;
+                            vid.id = videoArr[i]._id;
+                            vid.order = i;// TODO remove this when it actually comes from the video server
+                            vid.readableSize = $scope.translateSize(vid.size);
+                            $scope.videoPlayer.videos[$scope.videoPlayer.videos.length] = vid;
+                            usedSizeInBytes += vid.size;
+                        }
+                        // converting here from bytes
+                        $scope.videoRepo.usedSpace = $scope.translateSize(usedSizeInBytes);
+                        $scope.videoRepo.percFull = Math.round(usedSizeInBytes / MAX_SPACE_IN_BYTES * 100);
+                        console.log('Number of videos in storage: '+videoArr.length);
+                    } else {
+                        console.log('No videos available');
+                    }
+                    // TODO parse the response and populate our list of videos
+                    // TODO update the list and space available info
+                } else {
+                    console.log('video server session might have expired');
+                }
+                // TODO If it expires, we need to attempt to re-authenticate
+            });
+        };
+        $scope.$watch('currentProject.name', function (newName, oldName) {
+            if (newName !== undefined && newName !== oldName) {
+                // TODO We need to do the handshake here to first authenticate
+                // and then load the videos and update the users space info
+                console.log('LOAD PROJECT VIDEO FILES');
+                var projectId = $scope.currentProject._id;
+                var projectPassword = '123456';
+                Meteor.call('getVideoServerSessionKey', projectId, projectPassword, function (err, res) {
+                    if (res !== undefined && res !== null) {
+                        console.log('video server session response: '+res.status);
+                        $scope.videoRepo.sessionKey = res.status;
+                        $scope.updateVideoList();
+                    } else {
+                        console.log('video server session not created');
+                    }
+                });
+            }
+        }, true);
+
     }]
 );

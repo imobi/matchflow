@@ -94,20 +94,18 @@
                         </div>
                         <div class="panel-body">
                             <ol class="list-group">
-                                <li class="list-group-item">Cras justo odio</li>
-                                <li class="list-group-item">Dapibus ac facilisis in</li>
-                                <li class="list-group-item">Morbi leo risus</li>
-                                <li class="list-group-item">Porta ac consectetur ac</li>
-                                <li class="list-group-item">Vestibulum at eros</li>
+                                <li ng-repeat="video in videoPlayer.videos | orderBy:order" class="list-group-item">
+                                    {{ video.order }}: {{ video.name }} [{{ video.readableSize }}]
+                                </li>
                             </ol>
                         </div>
                         <div class="panel-footer" style="overflow:auto; clear: both;">
                             <span style="width:200px; float:left;">
                                 <h5 style="display:inline;">Space Available</h5>
                                 <div class="progress" style="margin-bottom: 0px;">
-                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: {{ videoRepo.percFull }}%">
                                         <!-- text for bar goes here -->
-                                        250Mb / 300Mb
+                                        {{ videoRepo.usedSpace }}/{{ videoRepo.totalSpace }}
                                     </div>
                                 </div>
                             </span>
@@ -120,10 +118,10 @@
 
                 </div>
                 <div role="tabpanel" class="tab-pane" id="player-tab">
-                    <mf-video-player player-id="'player'"></mf-video-player>
+                    <mf-video-player player-id="'player'" player-data="videoPlayer"></mf-video-player>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="livestream-tab">
-                    <mf-video-player player-id="'live'"></mf-video-player>
+                    <mf-video-player player-id="'live'" player-data="livePlayer"></mf-video-player>
                 </div>
             </div>
         </div>

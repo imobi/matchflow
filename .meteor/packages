@@ -29,3 +29,9 @@ random
 ejson
 spacebars
 check
+simple:authenticate-user-by-token
+simple:rest
+simple:rest-accounts-password
+simple:rest-bearer-token-parser
+simple:rest-json-error-handler
+simple:json-routes

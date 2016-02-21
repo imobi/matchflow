@@ -1,5 +1,22 @@
 Meteor.startup(function () {
     
+    // Disabled registration via the client
+    // TODO remove this later when its ready to go live
+    Accounts.config({
+        forbidClientAccountCreation: true
+    });
+    
+    // Error handling
+    JsonRoutes.ErrorMiddleware.use(RestMiddleware.handleErrorAsJson);
+    // Enable cross origin requests for all endpoints 
+    JsonRoutes.setResponseHeaders({
+        "Cache-Control": "no-store",
+        "Pragma": "no-cache",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, PUT, POST, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+    });
+    
     //Schema to use when creating user accounts
     var createUser = function (first_name, last_name, email, password) {
         return Accounts.createUser({
