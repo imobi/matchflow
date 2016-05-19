@@ -6,9 +6,17 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <!-- TODO show inline errors here -->
                     <div class="input-group">
                         <span class="input-group-addon">Project Name:</span>
                         <input type="text" ng-model="newProject.name" class="form-control"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Video Playback:</span>
+                        <label class="radio-inline"><input type="radio" name="playbackGroup" ng-model="newProject.selectedPlaybackDefault" value="data">Data</label>
+                        <label class="radio-inline"><input type="radio" name="playbackGroup" ng-model="newProject.selectedPlaybackDefault" value="livestream">LiveStream</label>
+                        <label class="radio-inline"><input type="radio" name="playbackGroup" ng-model="newProject.selectedPlaybackDefault" value="video">Video</label>
+                        <label class="radio-inline"><input type="radio" name="playbackGroup" ng-model="newProject.selectedPlaybackDefault" value="other">Other</label>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">League:</span>
@@ -22,10 +30,11 @@
                         <span class="input-group-addon">Game Date:</span>
                         <input type="date" ng-model="newProject.selectedGameDate" class="form-control"/>
                     </div>
-                    <mf-autocomplete label="'Event Groups:'" search-data="newProject.eventGroupData" ng-model="newProject.selectedEventGroups"></mf-autocomplete>
+                    <mf-data-selector title="'Select Event Groups to use'" list="newProject.eventGroupData.groupList" ng-model="newProject.selectedEventGroups"></mf-data-selector>
                     <!-- TODO allow the user to set the project permissions here, 
                          this is necessary for the searching functionality  to work-->
-                    <mf-autocomplete label="'Permissions:'" search-field="'type'" key-field="'id'" search-data="newProject.permissionsData" ng-model="newProject.selectedPermissions"></mf-autocomplete>
+                    <mf-data-selector title="'Project permissions to use'" key-field="'id'" search-field="'type'" list="newProject.permissionsData.groupList" ng-model="newProject.selectedPermissions"></mf-data-selector>
+                    <!--<mf-autocomplete label="'Permissions:'" search-field="'type'" key-field="'id'" search-data="newProject.permissionsData" ng-model="newProject.selectedPermissions"></mf-autocomplete>-->
                 </div>
             </div>
             <div class="modal-footer">

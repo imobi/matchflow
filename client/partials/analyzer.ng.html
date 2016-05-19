@@ -69,22 +69,20 @@
         </div>
     </div>
 
-    <!-- CHARTING EXAMPLE
-    <div style="position:fixed; top:100px; right:0px;">
-        <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
-    </div-->
     <div class="row">
         <div class="col-lg-2">
             <mf-tag-tree tag-data="currentProject.tags" active-dialog-key="activeDialogKey"></mf-tag-tree>
         </div>
         <div class="col-lg-8">
             <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#videos-tab" aria-controls="videos-tab" role="tab" data-toggle="tab">Videos</a></li>
-                <li role="presentation"><a href="#player-tab" aria-controls="player-tab" role="tab" data-toggle="tab">Player</a></li>
-                <li role="presentation"><a href="#livestream-tab" aria-controls="livestream-tab" role="tab" data-toggle="tab">Live Stream</a></li>
+                <li role="presentation" ng-class="{ active: isDefaultTab('video') }"><a href="#videos-tab" aria-controls="videos-tab" role="tab" data-toggle="tab" ng-if="isPlaybackSupported('video')">Videos</a></li>
+                <li role="presentation"><a href="#player-tab" aria-controls="player-tab" role="tab" data-toggle="tab" ng-if="isPlaybackSupported('video')">Player</a></li>
+                <li role="presentation" ng-class="{ active: isDefaultTab('livestream') }"><a href="#livestream-tab" aria-controls="livestream-tab" role="tab" data-toggle="tab" ng-if="isPlaybackSupported('livestream')">Live Stream</a></li>
+                <li role="presentation" ng-class="{ active: isDefaultTab('data') }"><a href="#data-tab" aria-controls="data-tab" role="tab" data-toggle="tab" ng-if="isPlaybackSupported('data')">Data View</a></li>
+                <li role="presentation"><a href="#options-tab" aria-controls="options-tab" role="tab" data-toggle="tab">Options</a></li>
             </ul>
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="videos-tab">
+                <div role="tabpanel" class="tab-pane active" id="videos-tab" ng-if="isPlaybackSupported('video')">
                     <!-- TODO show list of the uploaded videos here -->
                     <!-- TODO show video server space info as well -->
 
@@ -117,11 +115,22 @@
 
 
                 </div>
-                <div role="tabpanel" class="tab-pane" id="player-tab">
+                <div role="tabpanel" class="tab-pane" id="player-tab" ng-if="isPlaybackSupported('video')">
                     <mf-video-player player-id="'player'" player-data="videoPlayer"></mf-video-player>
                 </div>
-                <div role="tabpanel" class="tab-pane" id="livestream-tab">
+                <div role="tabpanel" class="tab-pane" id="livestream-tab" ng-if="isPlaybackSupported('livestream')">
                     <mf-video-player player-id="'live'" player-data="livePlayer"></mf-video-player>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="data-tab" ng-if="isPlaybackSupported('data')">
+                    <!-- CHART AREA -->
+                    Chart Area
+                    <div>
+                        <canvas id="doughnut" class="chart chart-doughnut" data="eventGroupChart.data" labels="eventGroupChart.labels"></canvas>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="options-tab">
+                    <!-- project options area -->
+                    Options Area
                 </div>
             </div>
         </div>

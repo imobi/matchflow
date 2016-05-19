@@ -74,7 +74,7 @@ angular.module('matchflow').factory('projectsService', ['$meteor','searchService
                         callback(_id);
                     }
                     //Generate a password for project and add to video server's white list
-                    Meteor.call('addProjectToVideoServer',_id); 
+                    //Meteor.call('addProjectToVideoServer',_id); 
                 },function(error){
                     // TODO throw an error without hiding the create project dialog
                     console.log('ProjectService: error project not saved',error);

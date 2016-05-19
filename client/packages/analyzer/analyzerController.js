@@ -65,8 +65,13 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
 
         // we expecting a project ID in the URL
         var projectID = $stateParams['pid'];
+        // after putting the dialogs into includes statements, we have to wait 
+        // using timeouts for the html to render in the partial otherwise the
+        // dialog isn't available to be shown yet
         if (projectID === 'new') { // else open the create project popup
-            $scope.showCreateNew();
+            $timeout(function(){
+                $scope.showCreateNew();
+            });
         } else if (projectID !== 'new' && projectID !== 'choose') { // if there is one, load that project
             //Binds current project object from Projects meteor collection
             $scope.currentProject = projectsService.getProjectByID(projectID);
@@ -74,7 +79,9 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
             projectsService._currentProject = projectID;
         } else {
             // choose
-            angular.element('#whatDoYouWantToDo').modal('show');
+            $timeout(function(){
+                angular.element('#whatDoYouWantToDo').modal('show');
+            });
         }
 
         $scope.showChooseExisting = function () {
@@ -155,6 +162,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
 
         $scope.newProject = {
             name: '',
+            selectedPlaybackDefault: 'data',
             selectedTeams: '',
             selectedLeague: '',
             selectedEventGroups: [], // we save an array of references
@@ -215,6 +223,9 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
                 // save new project into meteor
                 $scope.currentProject.name = $scope.newProject.name;
                 // owner is already set, no need to set it again
+                $scope.currentProject.playbackDefault = $scope.newProject.selectedPlaybackDefault;
+                //    we set this to be just one, but later it can expand as new configuration is added
+                $scope.currentProject.supportedPlaybackTypes = [$scope.currentProject.playbackDefault];
                 $scope.currentProject.league = $scope.newProject.selectedLeague;
                 $scope.currentProject.teams = $scope.newProject.selectedTeams;
                 $scope.currentProject.eventGroups = $scope.newProject.selectedEventGroups;
@@ -232,6 +243,7 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
                                 name: '',
                                 selectedTeams: '',
                                 selectedLeague: '',
+                                selectedPlaybackDefault: 'data',
                                 selectedEventGroups: [], // we save an array of references
                                 selectedPermissions: [], // we save an array of references
                                 selectedGameDate: '',
@@ -263,6 +275,23 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
                 }, 300);
             } else {
                 angular.element('#whatDoYouWantToDo').modal('show');
+            }
+        };
+        
+        // return whether the specified mode is enabled or not
+        $scope.isPlaybackSupported = function(mode) {
+            if ($scope.currentProject !== undefined && $scope.currentProject.supportedPlaybackTypes !== undefined && 
+                    $scope.currentProject.supportedPlaybackTypes.indexOf(mode)!==-1) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        $scope.isDefaultTab = function(tab) {
+            if ($scope.currentProject !== undefined && $scope.currentProject.playbackDefault === tab) {
+                return true;
+            } else {
+                return false;
             }
         };
 
@@ -325,64 +354,66 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
             // run through all the different segments of data and concat into one
             // large json object
             var dataToExp = {};
-            if ($scope.dataSections['generalProjectData']) {
-                dataToExp.projectName = $scope.currentProject.name;
-                dataToExp.dateOfEvent = $scope.currentProject.gameDate;
-            }
-            if ($scope.dataSections['leagueData']) {
-                dataToExp.league = $scope.currentProject.league;
-            }
-            if ($scope.dataSections['teamData']) {
-                dataToExp.teams = [];
-                if ($scope.currentProject.teams) {
-                    for (var i = 0; i < $scope.currentProject.teams.length; i++) {
-                        var team = $scope.currentProject.teams[i];
-                        // add the team data here
-                        dataToExp.teams[i] = {
-                            name: team.name
-                        };
-                    }
+            if ($scope.currentProject !== undefined) {
+                if ($scope.dataSections['generalProjectData']) {
+                    dataToExp.projectName = $scope.currentProject.name;
+                    dataToExp.dateOfEvent = $scope.currentProject.gameDate;
                 }
-            }
-            if ($scope.dataSections['eventGroupData']) {
-                dataToExp.eventGroups = [];
-                if ($scope.currentProject.eventGroups) {
-                    for (var i = 0; i < $scope.currentProject.eventGroups.length; i++) {
-                        var eventGroup = $scope.currentProject.eventGroups[i];
-                        // add the team data here
-                        var eventList = [];
-                        if (eventGroup.eventList) {
-                            for (var j = 0; j < eventGroup.eventList.length; j++) {
-                                var eventObj = eventGroup.eventList[j];
-                                eventList[j] = {
-                                    name: eventObj.name,
-                                    before: eventObj.before,
-                                    after: eventObj.after
-                                };
-                            }
+                if ($scope.dataSections['leagueData']) {
+                    dataToExp.league = $scope.currentProject.league;
+                }
+                if ($scope.dataSections['teamData']) {
+                    dataToExp.teams = [];
+                    if ($scope.currentProject.teams) {
+                        for (var i = 0; i < $scope.currentProject.teams.length; i++) {
+                            var team = $scope.currentProject.teams[i];
+                            // add the team data here
+                            dataToExp.teams[i] = {
+                                name: team.name
+                            };
                         }
-                        dataToExp.eventGroups[i] = {
-                            name: eventGroup.name,
-                            events: eventList,
-                            bgColor: eventGroup.bgColor,
-                            txtColor: eventGroup.txtColor
-                        };
                     }
                 }
-            }
-            if ($scope.dataSections['tagData']) {
-                dataToExp.tags = [];
-                if ($scope.currentProject.tags) {
-                    for (var i = 0; i < $scope.currentProject.tags.length; i++) {
-                        var tag = $scope.currentProject.tags[i];
-                        // add the team data here
-                        dataToExp.tags[i] = {
-                            name: tag.name,
-                            category: tag.category,
-                            time: tag.time,
-                            before: tag.before,
-                            after: tag.after
-                        };
+                if ($scope.dataSections['eventGroupData']) {
+                    dataToExp.eventGroups = [];
+                    if ($scope.currentProject.eventGroups) {
+                        for (var i = 0; i < $scope.currentProject.eventGroups.length; i++) {
+                            var eventGroup = $scope.currentProject.eventGroups[i];
+                            // add the team data here
+                            var eventList = [];
+                            if (eventGroup.eventList) {
+                                for (var j = 0; j < eventGroup.eventList.length; j++) {
+                                    var eventObj = eventGroup.eventList[j];
+                                    eventList[j] = {
+                                        name: eventObj.name,
+                                        before: eventObj.before,
+                                        after: eventObj.after
+                                    };
+                                }
+                            }
+                            dataToExp.eventGroups[i] = {
+                                name: eventGroup.name,
+                                events: eventList,
+                                bgColor: eventGroup.bgColor,
+                                txtColor: eventGroup.txtColor
+                            };
+                        }
+                    }
+                }
+                if ($scope.dataSections['tagData']) {
+                    dataToExp.tags = [];
+                    if ($scope.currentProject.tags) {
+                        for (var i = 0; i < $scope.currentProject.tags.length; i++) {
+                            var tag = $scope.currentProject.tags[i];
+                            // add the team data here
+                            dataToExp.tags[i] = {
+                                name: tag.name,
+                                category: tag.category,
+                                time: tag.time,
+                                before: tag.before,
+                                after: tag.after
+                            };
+                        }
                     }
                 }
             }
@@ -465,24 +496,30 @@ angular.module('matchflow').controller('AnalyzerCtrl', ['$scope', '$meteor', '$s
                 // TODO If it expires, we need to attempt to re-authenticate
             });
         };
-        $scope.$watch('currentProject.name', function (newName, oldName) {
-            if (newName !== undefined && newName !== oldName) {
-                // TODO We need to do the handshake here to first authenticate
-                // and then load the videos and update the users space info
-                console.log('LOAD PROJECT VIDEO FILES');
-                var projectId = $scope.currentProject._id;
-                var projectPassword = '123456';
-                Meteor.call('getVideoServerSessionKey', projectId, projectPassword, function (err, res) {
-                    if (res !== undefined && res !== null) {
-                        console.log('video server session response: '+res.status);
-                        $scope.videoRepo.sessionKey = res.status;
-                        $scope.updateVideoList();
-                    } else {
-                        console.log('video server session not created');
-                    }
-                });
-            }
-        }, true);
+        
+        $scope.$watch(
+            function(){
+                return projectsService._currentProject;
+            }, function (newName, oldName) {
+                if (newName !== undefined && newName !== 'choose' && newName !== 'new') {
+                    // TODO We need to do the handshake here to first authenticate
+                    // and then load the videos and update the users space info
+                    console.log('LOAD PROJECT VIDEO FILES');
+                    var projectId = $scope.currentProject.$$id;
+                    var projectPassword = '123456';
+                    Meteor.call('getVideoServerSessionKey', projectId, projectPassword, function (err, res) {
+                        if (res !== undefined && res !== null) {
+                            console.log('video server session response: '+res.status);
+                            $scope.videoRepo.sessionKey = res.status;
+                            $scope.updateVideoList();
+                        } else {
+                            console.log('video server session not created');
+                        }
+                    });
+                }
+            }, 
+            true
+        );
 
     }]
 );

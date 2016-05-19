@@ -7,6 +7,7 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
 		// TODO make this player responsive, change video size for screen
 		// we also want nodes, playback touch areas etc
 		template: '<div id="{{ playerId }}" class="row mf-video-player-container">'+
+                      'totalPlaybackLength:{{ totalPlaybackLength }}'+
 					  '<div id="videoPlayerHolder" class="col-lg-12"></div>'+
 				  '</div>',
 		replace: true,
@@ -47,7 +48,7 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
             // TODO run through all video names and get their relative URL's recursively
             var key = '1'; // authentication key
             // important player control metadata
-            scope.videoSwitchingArray = [];
+            scope.videoDurationArray = [];
             scope.totalPlaybackLength = 0;
             scope.currentVideoPlaybackIndex = 0;
             var loadVideos = function(videos,index) {
@@ -68,14 +69,40 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
                                     '<source src="'+res.url+'" type="video/mp4">'+
                                 '</video>';
                             element.find('.mf-video-container').append(videoPlayerHtml);
-                            var vid = element.find('#'+videoPlayerId)[0];
+                            var vidElement = element.find('#'+videoPlayerId);
                             // TODO get the length of the videos and sum them up, this forms the total playback length
                             // we must store this point as well in a map so we know when to switch
                             // we must now use this and the project counter to determine when to switch
-                            if (vid !== undefined) {
-                                var playbackLength = vid.duration;
-                                scope.videoSwitchingArray[scope.videoSwitchingArray.length]=scope.totalPlaybackLength;
-                                scope.totalPlaybackLength += playbackLength;
+                            if (vidElement[0] !== undefined) {
+//                                var video = document.querySelector('video');
+//                                video.addEventListener('timeupdate', function() {
+//                                  // don't have set the startTime yet? set it to our currentTime
+//                                  if (!this._startTime) this._startTime = this.currentTime;
+//                                  var playedTime = this.currentTime - this._startTime;
+//                                  if (playedTime >= 10) this.pause();
+//                                });
+                                //vid.onended = function() {
+                                    // play next video...
+                                //};
+                                // we have to load this data asynchronously, as it is only known at the point where the data is ready
+                                var videoIndex = scope.videoDurationArray.length;
+                                scope.videoDurationArray[videoIndex] = 0;
+                                vidElement.attr('index',videoIndex);
+                                // we add a native listener... TODO CHANGE THIS
+                                vidElement[0].addEventListener('loadeddata',function(){
+                                    var vidElem = angular.element(this);
+                                    var playbackLength = this.duration;
+                                    // set the loaded duration
+                                    vidElem.attr('duration',this.duration);
+                                    // get the loaded index
+                                    var vidIndex = vidElem.attr('index');
+                                    console.log('video - loadeddata: '+playbackLength+' @ '+vidIndex);
+                                    scope.videoDurationArray[vidIndex]=playbackLength;
+                                    scope.totalPlaybackLength += playbackLength;
+                                    scope.$apply();
+                                });
+
+                                
                             } else {
                                 console.log('video player - no duration found');
                             }
@@ -153,24 +180,25 @@ angular.module('matchflow').directive('mfVideoPlayer', ['$compile','videoPlayerS
                 );
                 scope.$watch(
                     'playerData.timer.timestamp',
-                    function(newTimestamp) {
+                    function() {
                         // do a range check to find out where the new timestamp is
                         // check if the right video is playing and move on
                         var index = 0;
                         var previousTimestamp = 0;
-                        for (var i = 0, found = false; !found && i < scope.videoSwitchingArray.length; i++) {
-                            var timestampToCheck = scope.videoSwitchingArray;
-                            if (newTimestamp >= previousTimestamp && newTimestamp < timestampToCheck) {
+                        var newTimestamp = scope.playerData.timer.timerPosition;
+                        for (var i = 0, found = false; !found && i < scope.videoDurationArray.length; i++) {
+                            var timestampToCheck = scope.videoDurationArray[i];
+                            if (newTimestamp >= previousTimestamp && newTimestamp < (previousTimestamp+timestampToCheck)) {
                                 index = i;
                                 found = true;
-                            } else {
-                                previousTimestamp = timestampToCheck;
                             }
+                            previousTimestamp += timestampToCheck;
                         }
                         
                         if (index !== undefined) {
                             var newPlayer = element.find('#'+scope.playerId+'_'+index);
-                            if (!newPlayer.css('display') === 'block') { // if its not showing, wrong player is visible, time to switch
+                            if (newPlayer.css('display') === 'none') { // if its not showing, wrong player is visible, time to switch
+                                console.log('Switching to player: '+index);
                                 // quick show the new player and start playing
                                 var oldPlayer = element.find('.mf-show-player');
                                 newPlayer.addClass('mf-show-player');
